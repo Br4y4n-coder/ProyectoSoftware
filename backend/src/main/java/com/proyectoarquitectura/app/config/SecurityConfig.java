@@ -30,6 +30,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final SensitiveEndpointAuditFilter sensitiveEndpointAuditFilter;
     private final RestAuthEntryPoint restAuthEntryPoint;
     private final RestAccessDeniedHandler restAccessDeniedHandler;
 
@@ -37,9 +38,11 @@ public class SecurityConfig {
     private String allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          SensitiveEndpointAuditFilter sensitiveEndpointAuditFilter,
                           RestAuthEntryPoint restAuthEntryPoint,
                           RestAccessDeniedHandler restAccessDeniedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.sensitiveEndpointAuditFilter = sensitiveEndpointAuditFilter;
         this.restAuthEntryPoint = restAuthEntryPoint;
         this.restAccessDeniedHandler = restAccessDeniedHandler;
     }
@@ -64,7 +67,8 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(sensitiveEndpointAuditFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

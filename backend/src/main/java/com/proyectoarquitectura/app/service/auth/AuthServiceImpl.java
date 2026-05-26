@@ -14,6 +14,7 @@ import com.proyectoarquitectura.app.repository.RolRepository;
 import com.proyectoarquitectura.app.repository.SesionRepository;
 import com.proyectoarquitectura.app.repository.UsuarioRepository;
 import com.proyectoarquitectura.app.security.JwtService;
+import com.proyectoarquitectura.app.security.SecurityAuditLogger;
 import com.proyectoarquitectura.app.security.TokenPurpose;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -134,6 +135,7 @@ public class AuthServiceImpl implements AuthService {
         Optional<Usuario> opt = usuarioRepository.findByCorreo(correo);
         if (opt.isEmpty()) {
             registrarLogAcceso(null, correo, ip, userAgent, false, "usuario_no_existe");
+            SecurityAuditLogger.loginFallido(correo, ip);
             throw AuthException.unauthorized("Credenciales invalidas");
         }
         Usuario u = opt.get();
@@ -161,6 +163,7 @@ public class AuthServiceImpl implements AuthService {
             }
             usuarioRepository.save(u);
             registrarLogAcceso(u, correo, ip, userAgent, false, "contrasena_incorrecta");
+            SecurityAuditLogger.loginFallido(correo, ip);
             throw AuthException.unauthorized("Credenciales invalidas");
         }
 
