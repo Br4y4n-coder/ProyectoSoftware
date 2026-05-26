@@ -72,7 +72,7 @@ public class Ticket {
     private LocalDateTime fechaVencimientoSla;
 
     @Column(name = "tiempo_solucion_minutos")
-    private Integer tiempoSolucionMinutos;
+    private Integer tiempoResolucionMinutos;
 
     @Column
     private Short valoracion;

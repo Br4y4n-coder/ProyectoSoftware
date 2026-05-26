@@ -35,7 +35,7 @@ public class TicketResponse {
     private LocalDateTime fechaInicioAtencion;
     private LocalDateTime fechaCierre;
     private LocalDateTime fechaVencimientoSla;
-    private Integer tiempoSolucionMinutos;
+    private Integer tiempoResolucionMinutos;
 
     public static TicketResponse from(Ticket t) {
         return TicketResponse.builder()
@@ -60,7 +60,7 @@ public class TicketResponse {
                 .fechaInicioAtencion(t.getFechaInicioAtencion())
                 .fechaCierre(t.getFechaCierre())
                 .fechaVencimientoSla(t.getFechaVencimientoSla())
-                .tiempoSolucionMinutos(t.getTiempoSolucionMinutos())
+                .tiempoResolucionMinutos(t.getTiempoResolucionMinutos())
                 .build();
     }
 }

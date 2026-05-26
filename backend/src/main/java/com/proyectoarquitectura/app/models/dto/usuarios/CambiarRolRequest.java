@@ -1,4 +1,4 @@
-package com.proyectoarquitectura.app.models.dto.tickets;
+package com.proyectoarquitectura.app.models.dto.usuarios;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -11,12 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CambiarEstadoRequest {
+public class CambiarRolRequest {
 
     @NotBlank
-    @Pattern(
-            regexp = "abierto|asignado|en_proceso|resuelto|cerrado|vencido|cancelado|reabierto",
-            message = "estado invalido"
-    )
-    private String estado;
+    @Pattern(regexp = "usuario|agente|administrador", message = "rol invalido")
+    private String rol;
 }
