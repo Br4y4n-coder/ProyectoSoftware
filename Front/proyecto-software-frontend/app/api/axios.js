@@ -19,7 +19,11 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
-      const token = window.localStorage.getItem(AUTH_TOKEN_KEY);
+      // Intentar obtener token con ambas claves posibles
+      let token = window.localStorage.getItem(AUTH_TOKEN_KEY);
+      if (!token) {
+        token = window.localStorage.getItem('token');
+      }
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -47,6 +51,7 @@ function flushQueue(error, newToken) {
 function clearTokensAndRedirect() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(AUTH_TOKEN_KEY);
+  window.localStorage.removeItem('token');
   window.localStorage.removeItem(REFRESH_TOKEN_KEY);
   window.localStorage.removeItem(USER_KEY);
   // Estando ya en una pantalla pública dejamos que el componente muestre el error
@@ -120,6 +125,7 @@ apiClient.interceptors.response.use(
       }
 
       window.localStorage.setItem(AUTH_TOKEN_KEY, newAccessToken);
+      window.localStorage.setItem('token', newAccessToken);
       if (newRefreshToken) {
         window.localStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
       }

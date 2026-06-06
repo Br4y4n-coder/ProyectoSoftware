@@ -1,87 +1,84 @@
-# Welcome to React Router!
+# TicketHub — Frontend
 
-A modern, production-ready template for building full-stack React applications using React Router.
+React 19 + TypeScript + Tailwind CSS v4 + React Router 7.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
-
-## Features
-
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+## Ejecutar el proyecto
 
 ```bash
 npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+Abre la URL que muestra Vite (por defecto `http://localhost:5173`).
 
-## Building for Production
+## Navegación — pantallas TicketHub
 
-Create a production build:
+### Rol Agente
 
-```bash
-npm run build
+| Ruta | Pantalla |
+|------|----------|
+| `/agent/dashboard` | Dashboard del agente (KPIs, gráfico, tickets, actividad) |
+| `/agent/queue` | Cola de tickets (filtros, tabs, selección múltiple) |
+| `/agent/tickets/:id` | Detalle de ticket (ej. `/agent/tickets/TKT-1038`) |
+
+### Rol Administrador
+
+| Ruta | Pantalla |
+|------|----------|
+| `/admin/dashboard` | Dashboard de administración |
+| `/admin/users` | Gestión de usuarios |
+| `/admin/assign-ticket` o `/admin/assign-ticket/TKT-1040` | Asignación de ticket |
+
+Tras iniciar sesión, `/` redirige automáticamente según `user.rol`:
+
+- `agente` → `/agent/dashboard`
+- `administrador` → `/admin/dashboard`
+- `usuario` → home de cliente (layout existente)
+
+### Probar sin backend (solo UI)
+
+1. Inicia sesión con una cuenta real, **o**
+2. En DevTools → Application → Local Storage, define:
+   - `auth_token` (cualquier valor no vacío)
+   - `user` → JSON, por ejemplo agente:
+
+```json
+{
+  "nombres": "Andrés",
+  "apellidos": "Rodríguez",
+  "rol": "agente",
+  "email": "andres@empresa.com"
+}
 ```
 
-## Deployment
+Para admin, usa `"rol": "administrador"`.
 
-### Docker Deployment
+## Estructura de código
 
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
+El proyecto usa la convención de **React Router 7** bajo `app/` (equivalente a `src/` en otros setups):
 
 ```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+app/
+  components/common/   # StatCard, AppShell, Badge, etc.
+  data/mockData.ts     # Datos de ejemplo
+  hooks/useMockData.ts
+  layouts/             # AgentLayout, AdminLayout, MainLayout
+  pages/agent/         # Pantallas agente (.tsx)
+  pages/admin/         # Pantallas admin (.tsx)
+  types/index.ts
+  routes.ts
 ```
 
-## Styling
+## Scripts
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Build de producción |
+| `npm run typecheck` | Verificación de tipos |
 
----
+## Dependencias UI
 
-Built with ❤️ using React Router.
+- **lucide-react** — iconos
+- **recharts** — gráficos
+- **date-fns** — fechas en español

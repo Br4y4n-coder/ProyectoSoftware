@@ -1,17 +1,8 @@
 package com.proyectoarquitectura.app.models.dto.tickets;
 
 import com.proyectoarquitectura.app.models.entity.Ticket;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class TicketResponse {
 
     private Integer id;
@@ -21,46 +12,106 @@ public class TicketResponse {
     private String tipo;
     private String prioridad;
     private String estado;
-
     private Integer categoriaId;
     private String categoriaNombre;
-
     private Integer clienteId;
     private String clienteNombre;
-
     private Integer agenteId;
     private String agenteNombre;
-
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaInicioAtencion;
     private LocalDateTime fechaCierre;
     private LocalDateTime fechaVencimientoSla;
     private Integer tiempoResolucionMinutos;
 
+    public TicketResponse() {}
+
     public static TicketResponse from(Ticket t) {
-        return TicketResponse.builder()
-                .id(t.getId())
-                .codigo(t.getCodigo())
-                .asunto(t.getAsunto())
-                .descripcion(t.getDescripcion())
-                .tipo(t.getTipo())
-                .prioridad(t.getPrioridad())
-                .estado(t.getEstado())
-                .categoriaId(t.getCategoria() != null ? t.getCategoria().getId() : null)
-                .categoriaNombre(t.getCategoria() != null ? t.getCategoria().getNombre() : null)
-                .clienteId(t.getCliente() != null ? t.getCliente().getId() : null)
-                .clienteNombre(t.getCliente() != null
-                        ? t.getCliente().getNombres() + " " + t.getCliente().getApellidos()
-                        : null)
-                .agenteId(t.getAgente() != null ? t.getAgente().getId() : null)
-                .agenteNombre(t.getAgente() != null
-                        ? t.getAgente().getNombres() + " " + t.getAgente().getApellidos()
-                        : null)
-                .fechaCreacion(t.getFechaCreacion())
-                .fechaInicioAtencion(t.getFechaInicioAtencion())
-                .fechaCierre(t.getFechaCierre())
-                .fechaVencimientoSla(t.getFechaVencimientoSla())
-                .tiempoResolucionMinutos(t.getTiempoResolucionMinutos())
-                .build();
+        TicketResponse response = new TicketResponse();
+        response.setId(t.getId());
+        response.setCodigo(t.getCodigo());
+        response.setAsunto(t.getAsunto());
+        response.setDescripcion(t.getDescripcion());
+        response.setTipo(t.getTipo());
+        response.setPrioridad(t.getPrioridad());
+        response.setEstado(t.getEstado());
+        
+        if (t.getCategoria() != null) {
+            response.setCategoriaId(t.getCategoria().getId());
+            response.setCategoriaNombre(t.getCategoria().getNombre());
+        }
+        
+        if (t.getCliente() != null) {
+            response.setClienteId(t.getCliente().getId());
+            response.setClienteNombre(t.getCliente().getNombres() + " " + t.getCliente().getApellidos());
+        }
+        
+        if (t.getAgente() != null) {
+            response.setAgenteId(t.getAgente().getId());
+            response.setAgenteNombre(t.getAgente().getNombres() + " " + t.getAgente().getApellidos());
+        }
+        
+        response.setFechaCreacion(t.getFechaCreacion());
+        response.setFechaInicioAtencion(t.getFechaInicioAtencion());
+        response.setFechaCierre(t.getFechaCierre());
+        response.setFechaVencimientoSla(t.getFechaVencimientoSla());
+        response.setTiempoResolucionMinutos(t.getTiempoResolucionMinutos());
+        
+        return response;
     }
+
+    // Getters y Setters
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+    
+    public String getCodigo() { return codigo; }
+    public void setCodigo(String codigo) { this.codigo = codigo; }
+    
+    public String getAsunto() { return asunto; }
+    public void setAsunto(String asunto) { this.asunto = asunto; }
+    
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
+    
+    public String getPrioridad() { return prioridad; }
+    public void setPrioridad(String prioridad) { this.prioridad = prioridad; }
+    
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+    
+    public Integer getCategoriaId() { return categoriaId; }
+    public void setCategoriaId(Integer categoriaId) { this.categoriaId = categoriaId; }
+    
+    public String getCategoriaNombre() { return categoriaNombre; }
+    public void setCategoriaNombre(String categoriaNombre) { this.categoriaNombre = categoriaNombre; }
+    
+    public Integer getClienteId() { return clienteId; }
+    public void setClienteId(Integer clienteId) { this.clienteId = clienteId; }
+    
+    public String getClienteNombre() { return clienteNombre; }
+    public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
+    
+    public Integer getAgenteId() { return agenteId; }
+    public void setAgenteId(Integer agenteId) { this.agenteId = agenteId; }
+    
+    public String getAgenteNombre() { return agenteNombre; }
+    public void setAgenteNombre(String agenteNombre) { this.agenteNombre = agenteNombre; }
+    
+    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    
+    public LocalDateTime getFechaInicioAtencion() { return fechaInicioAtencion; }
+    public void setFechaInicioAtencion(LocalDateTime fechaInicioAtencion) { this.fechaInicioAtencion = fechaInicioAtencion; }
+    
+    public LocalDateTime getFechaCierre() { return fechaCierre; }
+    public void setFechaCierre(LocalDateTime fechaCierre) { this.fechaCierre = fechaCierre; }
+    
+    public LocalDateTime getFechaVencimientoSla() { return fechaVencimientoSla; }
+    public void setFechaVencimientoSla(LocalDateTime fechaVencimientoSla) { this.fechaVencimientoSla = fechaVencimientoSla; }
+    
+    public Integer getTiempoResolucionMinutos() { return tiempoResolucionMinutos; }
+    public void setTiempoResolucionMinutos(Integer tiempoResolucionMinutos) { this.tiempoResolucionMinutos = tiempoResolucionMinutos; }
 }

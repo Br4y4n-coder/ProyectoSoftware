@@ -88,7 +88,7 @@ export default function HomeUsuario() {
               </h3>
               <button
                 type="button"
-                onClick={() => alert("Lista completa — próximamente.")}
+                onClick={() => window.location.href = "/mis-tickets"}
                 className="text-sm font-medium text-primary hover:text-primary-light"
               >
                 Ver todos →
@@ -257,8 +257,6 @@ function buildStats(tickets) {
   };
 }
 
-// Solo tickets activos con SLA definido, ordenados por urgencia, top 3.
-// Umbral URGENTE = 60 min restantes (alineado con expectativas del producto).
 function buildSlaItems(tickets) {
   const now = Date.now();
   return tickets
@@ -444,6 +442,7 @@ function IconBoxList() {
     </svg>
   );
 }
+
 function IconClock() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
@@ -452,6 +451,7 @@ function IconClock() {
     </svg>
   );
 }
+
 function IconCheck() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

@@ -45,21 +45,21 @@ export default function MainLayout() {
     navigate("/auth/login");
   };
 
-  // `soon: true` deja el item visible pero sin navegación (alerta "próximamente").
+  // Menu items
   const menuItems = [
     { label: "Inicio", icon: <IconHome />, to: "/" },
-    { label: "Mis tickets", icon: <IconList />, soon: true },
+    { label: "Mis tickets", icon: <IconList />, to: "/mis-tickets" },
     { label: "Crear ticket", icon: <IconPlus />, to: "/tickets/nuevo" },
-    { label: "Base de conocimiento", icon: <IconBook />, soon: true },
-    { label: "Mi perfil", icon: <IconUser />, soon: true },
+    { label: "Base de conocimiento", icon: <IconBook />, to: "/base-conocimiento" },
+    { label: "Mi perfil", icon: <IconUser />, to: "/mi-perfil" },
   ];
   const supportItems = [
-    { label: "Ayuda", soon: true },
-    { label: "Configuración", soon: true },
+    { label: "Ayuda", icon: <IconHelp />, to: "/ayuda" },
+    { label: "Configuración", icon: <IconSettings />, to: "/configuracion" },
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F9FAFB] font-sans text-zinc-900">
+    <div data-theme="app" className="flex h-screen overflow-hidden bg-[#F9FAFB] font-sans text-zinc-900">
       {sidebarOpen && (
         <button
           type="button"
@@ -157,14 +157,19 @@ export default function MainLayout() {
             </p>
           </div>
 
-          <div className="hidden xl:flex shrink-0 items-center gap-2 w-72 h-9 px-3 rounded-lg bg-zinc-100 text-sm text-zinc-400">
+          {/* Barra de búsqueda CORREGIDA */}
+          <div 
+            onClick={() => window.location.href = "/buscar"}
+            className="hidden xl:flex shrink-0 items-center gap-2 w-72 h-9 px-3 rounded-lg bg-zinc-100 text-sm text-zinc-400 cursor-pointer hover:bg-zinc-200 transition"
+          >
             <IconSearch />
             <span className="truncate">Buscar tickets, soluciones…</span>
           </div>
 
+          {/* Botón de notificaciones */}
           <button
             type="button"
-            onClick={() => alert("Notificaciones — próximamente.")}
+            onClick={() => window.location.href = "/notificaciones"}
             className="relative shrink-0 w-9 h-9 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-700 hover:bg-zinc-200 transition"
             aria-label="Notificaciones"
           >
@@ -343,6 +348,22 @@ function IconBell() {
     >
       <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
       <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+  );
+}
+function IconHelp() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <circle cx="8" cy="8" r="6.5" />
+      <path d="M8 11.5 v0 M8 7.5 v-2 M8 4.5 a1.5 1.5 0 0 1 1.5 1.5 c0 1 -0.5 1.5 -1.5 2" />
+    </svg>
+  );
+}
+function IconSettings() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <circle cx="8" cy="8" r="2.5" />
+      <path d="M13 8 a5 5 0 0 0 -0.5 -2.2 l1.5 -1.5 l-2 -2 l-1.5 1.5 a5 5 0 0 0 -2.2 -0.5 a5 5 0 0 0 -2.2 0.5 l-1.5 -1.5 l-2 2 l1.5 1.5 a5 5 0 0 0 -0.5 2.2 a5 5 0 0 0 0.5 2.2 l-1.5 1.5 l2 2 l1.5 -1.5 a5 5 0 0 0 2.2 0.5 a5 5 0 0 0 2.2 -0.5 l1.5 1.5 l2 -2 l-1.5 -1.5 a5 5 0 0 0 0.5 -2.2" />
     </svg>
   );
 }

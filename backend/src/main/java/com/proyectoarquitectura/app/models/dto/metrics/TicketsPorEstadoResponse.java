@@ -1,17 +1,18 @@
 package com.proyectoarquitectura.app.models.dto.metrics;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.Map;
-
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class TicketsPorEstadoResponse {
+    private String estado;
+    private Long cantidad;
 
-    private Map<String, Long> conteoPorEstado;
+    public TicketsPorEstadoResponse() {}
+
+    public TicketsPorEstadoResponse(String estado, Long cantidad) {
+        this.estado = estado;
+        this.cantidad = cantidad;
+    }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+    public Long getCantidad() { return cantidad; }
+    public void setCantidad(Long cantidad) { this.cantidad = cantidad; }
 }

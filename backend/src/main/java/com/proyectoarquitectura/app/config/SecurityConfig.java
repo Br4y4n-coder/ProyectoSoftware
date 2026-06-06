@@ -30,19 +30,16 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final SensitiveEndpointAuditFilter sensitiveEndpointAuditFilter;
     private final RestAuthEntryPoint restAuthEntryPoint;
     private final RestAccessDeniedHandler restAccessDeniedHandler;
 
-    @Value("${app.cors.allowed-origins}")
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:5174}")
     private String allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          SensitiveEndpointAuditFilter sensitiveEndpointAuditFilter,
                           RestAuthEntryPoint restAuthEntryPoint,
                           RestAccessDeniedHandler restAccessDeniedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.sensitiveEndpointAuditFilter = sensitiveEndpointAuditFilter;
         this.restAuthEntryPoint = restAuthEntryPoint;
         this.restAccessDeniedHandler = restAccessDeniedHandler;
     }
@@ -59,7 +56,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/healthChecksController/**",
+                                "/health",
+                                "/h2-console/**",
                                 "/error",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -67,8 +65,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(sensitiveEndpointAuditFilter, JwtAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -85,25 +82,22 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-
-        List<String> origins = allowedOrigins == null ? List.of()
+        List<String> origins = allowedOrigins == null ? List.of("http://localhost:5173", "http://localhost:5174")
                 : Arrays.stream(allowedOrigins.split(","))
                     .map(String::trim)
                     .filter(s -> !s.isBlank())
                     .toList();
 
-        log.info("[CORS] origenes permitidos: {}", origins);
+        log.info("[CORS] orígenes permitidos: {}", origins);
         if (origins.isEmpty()) {
-            log.warn("[CORS] no hay origenes permitidos. Define la variable CORS_ALLOWED_ORIGINS.");
+            log.warn("[CORS] no hay orígenes permitidos. Define la variable CORS_ALLOWED_ORIGINS.");
         }
 
         CorsConfiguration cfg = new CorsConfiguration();
-        // setAllowedOriginPatterns soporta wildcards (https://*.vercel.app);
-        // setAllowedOrigins seria literal y no aceptaria los previews de Vercel.
         cfg.setAllowedOriginPatterns(origins);
-        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        cfg.setAllowedHeaders(List.of("*"));
-        cfg.setExposedHeaders(List.of("Authorization"));
+        cfg.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        cfg.setAllowedHeaders(Arrays.asList("*"));
+        cfg.setExposedHeaders(Arrays.asList("Authorization"));
         cfg.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
