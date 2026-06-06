@@ -3,6 +3,15 @@ import apiFetch from "../../api/apiFetch";
 
 import { Link } from "react-router";
 import { Search, X } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import ticketsService from "../../services/ticketsService";
+import type { TicketPriority, TicketStatus } from "../../types";
+
+interface AuthUser {
+  id: number;
+  nombres: string;
+  apellidos: string;
+}
 import { Avatar } from "../../components/common/Avatar";
 import { Pagination } from "../../components/common/Pagination";
 import {
@@ -28,6 +37,8 @@ interface TicketItem {
 }
 
 export default function TicketQueue() {
+  const { user: rawUser } = useAuth();
+  const user = rawUser as AuthUser | null;
   const [tickets, setTickets] = useState<TicketItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -35,6 +46,8 @@ export default function TicketQueue() {
   const [tab, setTab] = useState<QueueTab>("general");
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [filters, setFilters] = useState<string[]>(["Estado: Abierto"]);
+  const [asignando, setAsignando] = useState(false);
+  const [msgAsignacion, setMsgAsignacion] = useState("");
 
   const fetchTickets = async () => {
     const token = localStorage.getItem('auth_token');
@@ -98,6 +111,32 @@ export default function TicketQueue() {
   const toggleAll = () => {
     if (selected.size === filtered.length) setSelected(new Set());
     else setSelected(new Set(filtered.map((t) => t.id)));
+  };
+
+  const handleAsignarme = async () => {
+    if (!user?.id || selected.size === 0 || asignando) return;
+    setAsignando(true);
+    setMsgAsignacion("");
+    const ids = Array.from(selected);
+    let ok = 0;
+    let fail = 0;
+    for (const ticketId of ids) {
+      try {
+        await ticketsService.asignar(ticketId, user.id);
+        ok++;
+      } catch {
+        fail++;
+      }
+    }
+    setSelected(new Set());
+    await fetchTickets();
+    setMsgAsignacion(
+      fail === 0
+        ? `✓ ${ok} ticket${ok !== 1 ? "s" : ""} asignado${ok !== 1 ? "s" : ""} a ti`
+        : `✓ ${ok} asignado${ok !== 1 ? "s" : ""}, ${fail} con error`
+    );
+    setTimeout(() => setMsgAsignacion(""), 4000);
+    setAsignando(false);
   };
 
   if (isLoading) {
@@ -193,13 +232,31 @@ export default function TicketQueue() {
         ))}
       </div>
 
+      {msgAsignacion && (
+        <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-2.5 text-sm text-green-700 font-medium">
+          {msgAsignacion}
+        </div>
+      )}
+
       {selected.size > 0 && (
         <div className="flex flex-wrap items-center gap-3 px-4 py-3 rounded-lg bg-primary-faint border border-primary-subtle text-sm">
           <span className="font-medium text-primary">
-            {selected.size} tickets seleccionados
+            {selected.size} ticket{selected.size !== 1 ? "s" : ""} seleccionado{selected.size !== 1 ? "s" : ""}
           </span>
-          <button type="button" className="text-primary hover:underline font-medium">
-            Asignar a...
+          <button
+            type="button"
+            disabled={asignando}
+            onClick={handleAsignarme}
+            className="text-primary hover:underline font-medium disabled:opacity-60"
+          >
+            {asignando ? "Asignando…" : "Asignar a mí"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelected(new Set())}
+            className="text-zinc-500 hover:text-zinc-800 font-medium ml-auto"
+          >
+            Cancelar
           </button>
         </div>
       )}
@@ -246,7 +303,7 @@ export default function TicketQueue() {
                   </td>
                   <td className="px-4 py-3 text-zinc-700">{ticket.clienteNombre}</td>
                   <td className="px-4 py-3">
-                    <PriorityBadge priority={ticket.prioridad} />
+                    <PriorityBadge priority={ticket.prioridad as TicketPriority} />
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
