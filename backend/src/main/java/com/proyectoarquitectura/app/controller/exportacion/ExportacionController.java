@@ -1,6 +1,9 @@
 package com.proyectoarquitectura.app.controller.exportacion;
 
 import com.proyectoarquitectura.app.service.exportacion.ExportacionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Tag(name = "Exportación", description = "Exportación de datos del sistema en formato CSV y JSON. Solo accesible por ADMINISTRADOR.")
+@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/exportar")
 @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -25,7 +30,7 @@ public class ExportacionController {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
     }
 
-    // Exportar Tickets CSV
+    @Operation(summary = "Exportar tickets en CSV", description = "Descarga todos los tickets del sistema en formato CSV.")
     @GetMapping("/tickets/csv")
     public ResponseEntity<byte[]> exportarTicketsCSV() {
         byte[] data = exportacionService.exportarTicketsCSV();
@@ -35,7 +40,7 @@ public class ExportacionController {
                 .body(data);
     }
 
-    // Exportar Usuarios CSV
+    @Operation(summary = "Exportar usuarios en CSV", description = "Descarga todos los usuarios del sistema en formato CSV.")
     @GetMapping("/usuarios/csv")
     public ResponseEntity<byte[]> exportarUsuariosCSV() {
         byte[] data = exportacionService.exportarUsuariosCSV();
@@ -45,7 +50,7 @@ public class ExportacionController {
                 .body(data);
     }
 
-    // Exportar Auditoría CSV
+    @Operation(summary = "Exportar auditoría en CSV", description = "Descarga los logs de auditoría en formato CSV.")
     @GetMapping("/auditoria/csv")
     public ResponseEntity<byte[]> exportarAuditoriaCSV() {
         byte[] data = exportacionService.exportarAuditoriaCSV();
@@ -55,7 +60,7 @@ public class ExportacionController {
                 .body(data);
     }
 
-    // Exportar Tickets JSON
+    @Operation(summary = "Exportar tickets en JSON", description = "Descarga todos los tickets del sistema en formato JSON.")
     @GetMapping("/tickets/json")
     public ResponseEntity<String> exportarTicketsJSON() {
         String data = exportacionService.exportarTicketsJSON();
@@ -65,7 +70,7 @@ public class ExportacionController {
                 .body(data);
     }
 
-    // Exportar Usuarios JSON
+    @Operation(summary = "Exportar usuarios en JSON", description = "Descarga todos los usuarios del sistema en formato JSON.")
     @GetMapping("/usuarios/json")
     public ResponseEntity<String> exportarUsuariosJSON() {
         String data = exportacionService.exportarUsuariosJSON();
@@ -75,7 +80,7 @@ public class ExportacionController {
                 .body(data);
     }
 
-    // Exportar Auditoría JSON
+    @Operation(summary = "Exportar auditoría en JSON", description = "Descarga los logs de auditoría en formato JSON.")
     @GetMapping("/auditoria/json")
     public ResponseEntity<String> exportarAuditoriaJSON() {
         String data = exportacionService.exportarAuditoriaJSON();
