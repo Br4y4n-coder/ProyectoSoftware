@@ -3,6 +3,7 @@ package com.proyectoarquitectura.app.controller.usuarios;
 import com.proyectoarquitectura.app.exception.AuthException;
 import com.proyectoarquitectura.app.models.dto.ApiResponse;
 import com.proyectoarquitectura.app.models.dto.auth.UsuarioResponse;
+import com.proyectoarquitectura.app.models.dto.usuarios.CambiarEstadoUsuarioRequest;
 import com.proyectoarquitectura.app.models.dto.usuarios.CambiarRolRequest;
 import com.proyectoarquitectura.app.security.CustomUserDetails;
 import com.proyectoarquitectura.app.service.usuarios.UsuarioService;
@@ -54,6 +55,16 @@ public class UsuarioController {
                 .data(data)
                 .timestamp(Instant.now().toEpochMilli())
                 .build());
+    }
+
+    @Operation(summary = "Cambiar estado de usuario", description = "Cambia el estado del usuario (activo, pendiente, suspendido, rechazado, eliminado).")
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<ApiResponse<UsuarioResponse>> cambiarEstado(@PathVariable Integer id,
+                                                                      @Valid @RequestBody CambiarEstadoUsuarioRequest req,
+                                                                      @AuthenticationPrincipal CustomUserDetails me) {
+        if (me == null) throw AuthException.unauthorized("No autenticado");
+        UsuarioResponse data = usuarioService.cambiarEstado(id, req.getEstado(), me.getUsuario().getId());
+        return ResponseEntity.ok(ok(200, "Estado actualizado", data));
     }
 
     private <T> ApiResponse<T> ok(int status, String message, T data) {

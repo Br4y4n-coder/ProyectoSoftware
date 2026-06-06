@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,6 +19,9 @@ public class UsuarioResponse {
     private String correo;
     private String rol;
     private String estado;
+    private String area;
+    private Integer nivelAgente;
+    private LocalDateTime ultimoAcceso;
 
     public static UsuarioResponse from(Usuario u) {
         return UsuarioResponse.builder()
@@ -26,6 +31,9 @@ public class UsuarioResponse {
                 .correo(u.getCorreo())
                 .rol(u.getRol() != null ? u.getRol().getNombre() : null)
                 .estado(u.getEstado())
+                .area(u.getArea() != null ? u.getArea().getNombre() : null)
+                .nivelAgente(u.getNivelAgente())
+                .ultimoAcceso(u.getUltimoAcceso())
                 .build();
     }
 }

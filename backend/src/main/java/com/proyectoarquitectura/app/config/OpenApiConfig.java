@@ -35,8 +35,8 @@ public class OpenApiConfig {
                                 .name("Equipo de Desarrollo")
                                 .email("soporte@proyectoarquitectura.com")))
                 .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Servidor local"),
-                        new Server().url("https://proyect-software.onrender.com").description("Producción")))
+                        new Server().url("https://proyecto-ticket-26xq.onrender.com").description("Producción"),
+                        new Server().url("http://localhost:8080").description("Servidor local")))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components()
                         .addSecuritySchemes("Bearer Authentication",

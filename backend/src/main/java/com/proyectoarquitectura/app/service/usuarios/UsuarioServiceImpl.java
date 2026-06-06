@@ -48,6 +48,30 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
+    public UsuarioResponse cambiarEstado(Integer usuarioId, String nuevoEstado, Integer adminId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado: " + usuarioId));
+
+        if (usuarioId.equals(adminId)) {
+            throw BusinessException.badRequest("No puedes cambiar el estado de tu propia cuenta");
+        }
+
+        String estadoAnterior = usuario.getEstado();
+        usuario.setEstado(nuevoEstado.toLowerCase());
+        usuario = usuarioRepository.save(usuario);
+
+        SecurityAuditLogger.cambioRol(
+                usuario.getId(),
+                usuario.getCorreo(),
+                "estado:" + estadoAnterior,
+                "estado:" + nuevoEstado,
+                adminId);
+
+        return UsuarioResponse.from(usuario);
+    }
+
+    @Override
     public Page<UsuarioResponse> listarUsuarios(Pageable pageable) {
         return usuarioRepository.findAll(pageable).map(UsuarioResponse::from);
     }

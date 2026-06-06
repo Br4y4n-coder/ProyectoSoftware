@@ -16,6 +16,7 @@ import {
 } from "recharts";
 import { Download, RefreshCw, Star } from "lucide-react";
 import { useDashboardData, formatMinutos } from "../../hooks/useDashboardData";
+import AssignTicketModal from "../../components/admin/AssignTicketModal";
 
 const CATEGORIA_COLORS = [
   "bg-primary",
@@ -36,6 +37,7 @@ const AVATAR_COLORS = [
 export default function AdminDashboard() {
   const { data, loading, error, recargar } = useDashboardData();
   const [rango, setRango] = useState<"dia" | "mes">("dia");
+  const [ticketAsignar, setTicketAsignar] = useState<number | null>(null);
   const today = format(new Date(), "EEEE d MMM", { locale: es });
 
   const chartData = rango === "dia" ? data?.serieDiaria : data?.serieSemanal;
@@ -436,14 +438,15 @@ export default function AdminDashboard() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <Link
-                        to={`/admin/assign-ticket/${t.id}`}
+                      <button
+                        type="button"
+                        onClick={() => setTicketAsignar(t.id)}
                         className={`text-sm font-bold hover:underline ${
                           urgente ? "text-red-600" : "text-amber-600"
                         }`}
                       >
                         #{t.codigo}
-                      </Link>
+                      </button>
                       <span
                         className={`text-xs font-bold ${
                           urgente ? "text-red-500" : "text-amber-600"
@@ -465,6 +468,14 @@ export default function AdminDashboard() {
           )}
         </div>
       </div>
+
+      {ticketAsignar !== null && (
+        <AssignTicketModal
+          ticketId={ticketAsignar}
+          onClose={() => setTicketAsignar(null)}
+          onAssigned={recargar}
+        />
+      )}
     </div>
   );
 }

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 public interface UsuarioService {
 
     UsuarioResponse cambiarRol(Integer usuarioId, String nuevoRol, Integer adminId);
-    
+
+    UsuarioResponse cambiarEstado(Integer usuarioId, String nuevoEstado, Integer adminId);
+
     Page<UsuarioResponse> listarUsuarios(Pageable pageable);
 }
