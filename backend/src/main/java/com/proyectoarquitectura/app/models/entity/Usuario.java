@@ -71,6 +71,20 @@ public class Usuario {
     // Constructor vacío
     public Usuario() {}
 
+    // Llena las fechas automáticamente para que ningún insert/update
+    // falle por las columnas NOT NULL creado_en / actualizado_en.
+    @PrePersist
+    void prePersist() {
+        LocalDateTime ahora = LocalDateTime.now();
+        if (creadoEn == null) creadoEn = ahora;
+        if (actualizadoEn == null) actualizadoEn = ahora;
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        actualizadoEn = LocalDateTime.now();
+    }
+
     // Getters y Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

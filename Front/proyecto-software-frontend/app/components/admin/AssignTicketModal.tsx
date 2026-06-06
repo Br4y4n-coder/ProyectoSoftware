@@ -13,6 +13,22 @@ interface TicketInfo {
   fechaVencimientoSla: string | null;
 }
 
+interface UsuarioApi {
+  id: number;
+  nombres: string;
+  apellidos: string;
+  rol: string;
+  estado: string;
+  area?: string | null;
+  nivelAgente?: number | null;
+}
+
+interface TicketCargaApi {
+  agenteId: number | null;
+  estado: string;
+  fechaVencimientoSla: string | null;
+}
+
 interface AgenteInfo {
   id: number;
   nombre: string;
@@ -81,8 +97,8 @@ export default function AssignTicketModal({
         if (!usuariosRes.ok) throw new Error("No se pudieron cargar los agentes");
 
         const t: TicketInfo = (await ticketRes.json())?.data;
-        const usuarios: any[] = (await usuariosRes.json())?.data?.content ?? [];
-        const tickets: any[] = ticketsRes.ok
+        const usuarios: UsuarioApi[] = (await usuariosRes.json())?.data?.content ?? [];
+        const tickets: TicketCargaApi[] = ticketsRes.ok
           ? (await ticketsRes.json())?.data?.content ?? []
           : [];
 

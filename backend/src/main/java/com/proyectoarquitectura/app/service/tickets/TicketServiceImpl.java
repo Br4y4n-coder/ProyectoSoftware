@@ -9,6 +9,7 @@ import com.proyectoarquitectura.app.models.entity.Ticket;
 import com.proyectoarquitectura.app.models.entity.Usuario;
 import com.proyectoarquitectura.app.repository.TicketRepository;
 import com.proyectoarquitectura.app.repository.UsuarioRepository;
+import com.proyectoarquitectura.app.service.auth.EmailService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,13 @@ public class TicketServiceImpl implements TicketService {
 
     private final UsuarioRepository usuarioRepository;
     private final TicketRepository ticketRepository;
+    private final EmailService emailService;
 
-    public TicketServiceImpl(UsuarioRepository usuarioRepository, TicketRepository ticketRepository) {
+    public TicketServiceImpl(UsuarioRepository usuarioRepository, TicketRepository ticketRepository,
+                             EmailService emailService) {
         this.usuarioRepository = usuarioRepository;
         this.ticketRepository = ticketRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -45,6 +49,7 @@ public class TicketServiceImpl implements TicketService {
         ticket.setActualizadoEn(LocalDateTime.now());
         
         ticket = ticketRepository.save(ticket);
+        emailService.notificarTicketCreado(ticket);
         return TicketResponse.from(ticket);
     }
 
@@ -92,8 +97,9 @@ public class TicketServiceImpl implements TicketService {
         ticket.setAgente(agente);
         ticket.setFechaInicioAtencion(LocalDateTime.now());
         ticket.setActualizadoEn(LocalDateTime.now());
-        
+
         ticket = ticketRepository.save(ticket);
+        emailService.notificarTicketAsignado(ticket);
         return TicketResponse.from(ticket);
     }
 
@@ -102,13 +108,17 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
             .orElseThrow(() -> new RuntimeException("Ticket no encontrado"));
         
+        String estadoAnterior = ticket.getEstado();
         ticket.setEstado(nuevoEstado);
         if ("cerrado".equalsIgnoreCase(nuevoEstado) || "resuelto".equalsIgnoreCase(nuevoEstado)) {
             ticket.setFechaCierre(LocalDateTime.now());
         }
         ticket.setActualizadoEn(LocalDateTime.now());
-        
+
         ticket = ticketRepository.save(ticket);
+        if (!nuevoEstado.equalsIgnoreCase(estadoAnterior)) {
+            emailService.notificarCambioEstado(ticket, estadoAnterior);
+        }
         return TicketResponse.from(ticket);
     }
 

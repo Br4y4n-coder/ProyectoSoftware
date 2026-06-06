@@ -110,6 +110,18 @@ public class BrevoEmailService implements EmailService {
                 escapar(ticket.getPrioridad()));
         enviarAsync(ticket.getAgente().getCorreo(), nombreCompleto(ticket.getAgente()),
                 "SIT - Ticket asignado: " + ticket.getCodigo(), html);
+
+        if (ticket.getCliente() != null) {
+            String htmlCliente = """
+                    <h2>Tu ticket fue tomado</h2>
+                    <p>Tu ticket <strong>%s</strong> (%s) fue asignado al agente <strong>%s</strong> y ya esta en atencion.</p>
+                    """.formatted(
+                    escapar(ticket.getCodigo()),
+                    escapar(ticket.getAsunto()),
+                    escapar(nombreCompleto(ticket.getAgente())));
+            enviarAsync(ticket.getCliente().getCorreo(), nombreCompleto(ticket.getCliente()),
+                    "SIT - Tu ticket " + ticket.getCodigo() + " esta en atencion", htmlCliente);
+        }
     }
 
     @Override

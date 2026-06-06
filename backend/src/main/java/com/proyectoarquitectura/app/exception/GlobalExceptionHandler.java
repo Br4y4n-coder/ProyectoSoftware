@@ -4,6 +4,7 @@ import com.proyectoarquitectura.app.models.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -48,6 +49,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({BadCredentialsException.class, DisabledException.class, LockedException.class, AuthenticationException.class})
     public ResponseEntity<ApiResponse<Object>> handleSecurityAuth(AuthenticationException ex) {
         return build(HttpStatus.UNAUTHORIZED, "No autenticado", ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
+        return build(HttpStatus.FORBIDDEN, "Acceso denegado", null, null);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

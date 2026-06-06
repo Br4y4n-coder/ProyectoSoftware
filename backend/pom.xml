@@ -87,6 +87,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.8.8</version>
@@ -122,6 +128,64 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals><goal>prepare-agent</goal></goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals><goal>report</goal></goals>
+					</execution>
+					<execution>
+						<id>check</id>
+						<phase>verify</phase>
+						<goals><goal>check</goal></goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>INSTRUCTION</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.25</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+							<excludes>
+								<!-- Punto de entrada de la aplicación -->
+								<exclude>com/proyectoarquitectura/app/RunApplication.class</exclude>
+								<!-- DTOs y entidades JPA: sin lógica de negocio -->
+								<exclude>com/proyectoarquitectura/app/models/dto/**</exclude>
+								<exclude>com/proyectoarquitectura/app/models/entity/**</exclude>
+								<!-- Configuración de Spring: gestionada por el framework -->
+								<exclude>com/proyectoarquitectura/app/config/**</exclude>
+								<!-- Repositorios Spring Data: implementación generada -->
+								<exclude>com/proyectoarquitectura/app/repository/**</exclude>
+								<!-- Infraestructura de seguridad JWT y filtros -->
+								<exclude>com/proyectoarquitectura/app/security/JwtService.class</exclude>
+								<exclude>com/proyectoarquitectura/app/security/JwtAuthenticationFilter.class</exclude>
+								<exclude>com/proyectoarquitectura/app/security/RestAuthEntryPoint.class</exclude>
+								<exclude>com/proyectoarquitectura/app/security/RestAccessDeniedHandler.class</exclude>
+								<exclude>com/proyectoarquitectura/app/security/SecurityAuditLogger.class</exclude>
+								<exclude>com/proyectoarquitectura/app/security/TokenPurpose.class</exclude>
+								<!-- Excepciones simples: factories de error sin lógica -->
+								<exclude>com/proyectoarquitectura/app/exception/AuthException.class</exclude>
+								<exclude>com/proyectoarquitectura/app/exception/BusinessException.class</exclude>
+								<exclude>com/proyectoarquitectura/app/exception/NotFoundException.class</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
