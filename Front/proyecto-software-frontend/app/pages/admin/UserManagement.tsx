@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import apiFetch from "../../api/apiFetch";
 import { Plus, Search, Upload, X } from "lucide-react";
-import NuevoAgenteModal from "../../components/admin/NuevoAgenteModal";
+import NuevoUsuarioModal from "../../components/admin/NuevoUsuarioModal";
 
 interface Usuario {
   id: number;
@@ -445,11 +445,10 @@ export default function UserManagement() {
         </div>
       )}
 
-      <NuevoAgenteModal
+      <NuevoUsuarioModal
         isOpen={modalNuevo}
         onClose={() => setModalNuevo(false)}
         onSuccess={() => {
-          setModalNuevo(false);
           flash("Usuario creado correctamente");
           fetchUsuarios();
         }}
