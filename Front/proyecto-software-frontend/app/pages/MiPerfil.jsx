@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import apiFetch from "../api/apiFetch";
+
 import { useAuth } from "../contexts/AuthContext";
 
 export default function MiPerfil() {
@@ -33,7 +35,7 @@ export default function MiPerfil() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/api/usuarios/perfil", {
+      const response = await apiFetch("/api/usuarios/perfil", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

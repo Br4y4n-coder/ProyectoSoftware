@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import apiFetch from "../../api/apiFetch";
+
 export default function TicketsAdmin() {
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,7 +18,7 @@ export default function TicketsAdmin() {
       }
       
       try {
-        const response = await fetch(`http://localhost:8080/api/tickets?page=0&size=100`, {
+        const response = await apiFetch(`/api/tickets?page=0&size=100`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

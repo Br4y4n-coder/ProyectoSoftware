@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import apiFetch from "../../api/apiFetch";
+
 export default function MetricasAdmin() {
   const [ticketsPorEstado, setTicketsPorEstado] = useState([]);
   const [ticketsPorPrioridad, setTicketsPorPrioridad] = useState([]);
@@ -18,7 +20,7 @@ export default function MetricasAdmin() {
       }
       
       try {
-        const resEstado = await fetch(`http://localhost:8080/api/metrics/tickets-por-estado`, {
+        const resEstado = await apiFetch(`/api/metrics/tickets-por-estado`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (resEstado.ok) {
@@ -26,7 +28,7 @@ export default function MetricasAdmin() {
           setTicketsPorEstado(data?.data || []);
         }
 
-        const resPrioridad = await fetch(`http://localhost:8080/api/metrics/tickets-por-prioridad`, {
+        const resPrioridad = await apiFetch(`/api/metrics/tickets-por-prioridad`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (resPrioridad.ok) {
@@ -34,7 +36,7 @@ export default function MetricasAdmin() {
           setTicketsPorPrioridad(data?.data || []);
         }
 
-        const resTiempo = await fetch(`http://localhost:8080/api/metrics/tiempo-promedio-resolucion`, {
+        const resTiempo = await apiFetch(`/api/metrics/tiempo-promedio-resolucion`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (resTiempo.ok) {

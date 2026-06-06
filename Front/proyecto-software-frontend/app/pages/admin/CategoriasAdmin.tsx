@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { Plus, Edit, Trash2, Search } from "lucide-react";
 
 export default function CategoriasAdmin() {
@@ -17,7 +19,7 @@ export default function CategoriasAdmin() {
     }
     
     try {
-      const response = await fetch(`http://localhost:8080/api/categorias`, {
+      const response = await apiFetch(`/api/categorias`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

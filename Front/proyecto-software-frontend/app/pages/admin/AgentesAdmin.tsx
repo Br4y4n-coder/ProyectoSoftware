@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { Search, UserPlus, X, Edit, Save } from "lucide-react";
 import { Badge } from "../../components/common/Badge";
 
@@ -40,7 +42,7 @@ export default function AgentesAdmin() {
     }
     
     try {
-      const response = await fetch(`http://localhost:8080/api/usuarios?page=0&size=100`, {
+      const response = await apiFetch(`/api/usuarios?page=0&size=100`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -101,7 +103,7 @@ export default function AgentesAdmin() {
     const token = localStorage.getItem('auth_token');
 
     try {
-      const registerResponse = await fetch(`http://localhost:8080/api/auth/register`, {
+      const registerResponse = await apiFetch(`/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -125,7 +127,7 @@ export default function AgentesAdmin() {
 
       const usuarioId = registerData?.data?.id;
 
-      const rolResponse = await fetch(`http://localhost:8080/api/usuarios/${usuarioId}/rol`, {
+      const rolResponse = await apiFetch(`/api/usuarios/${usuarioId}/rol`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -182,7 +184,7 @@ export default function AgentesAdmin() {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch(`http://localhost:8080/api/usuarios/${agenteEditando.id}`, {
+      const response = await apiFetch(`/api/usuarios/${agenteEditando.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

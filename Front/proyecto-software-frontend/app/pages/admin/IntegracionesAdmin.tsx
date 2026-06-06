@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { 
   Plug, 
   Webhook, 
@@ -27,7 +29,7 @@ export default function IntegracionesAdmin() {
     }
     
     try {
-      const response = await fetch(`http://localhost:8080/api/integraciones`, {
+      const response = await apiFetch(`/api/integraciones`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -53,7 +55,7 @@ export default function IntegracionesAdmin() {
     const accion = conectado ? "desconectar" : "conectar";
     
     try {
-      const response = await fetch(`http://localhost:8080/api/integraciones/${id}/${accion}`, {
+      const response = await apiFetch(`/api/integraciones/${id}/${accion}`, {
         method: "POST",
         headers: { 
           'Authorization': `Bearer ${token}`,

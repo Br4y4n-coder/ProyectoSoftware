@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { Link } from "react-router";
 import { Search, X } from "lucide-react";
 import { Avatar } from "../../components/common/Avatar";
@@ -44,7 +46,7 @@ export default function TicketQueue() {
     }
     
     try {
-      const response = await fetch(`http://localhost:8080/api/tickets?page=0&size=100`, {
+      const response = await apiFetch(`/api/tickets?page=0&size=100`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { Search } from "lucide-react";
 
 export default function AuditoriaAdmin() {
@@ -18,15 +20,15 @@ export default function AuditoriaAdmin() {
     }
     
     try {
-      let url = `http://localhost:8080/api/auditoria?page=0&size=100`;
+      let url = `/api/auditoria?page=0&size=100`;
       
       if (search && tipoFilter === "usuario") {
-        url = `http://localhost:8080/api/auditoria/buscar/usuario?usuario=${search}&page=0&size=100`;
+        url = `/api/auditoria/buscar/usuario?usuario=${search}&page=0&size=100`;
       } else if (search && tipoFilter === "accion") {
-        url = `http://localhost:8080/api/auditoria/buscar/accion?accion=${search}&page=0&size=100`;
+        url = `/api/auditoria/buscar/accion?accion=${search}&page=0&size=100`;
       }
       
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
