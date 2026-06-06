@@ -12,19 +12,31 @@ export interface SidebarNavItem {
   soon?: boolean;
 }
 
+export interface SidebarSection {
+  label: string;
+  items: SidebarNavItem[];
+}
+
 export interface AppShellProps {
-  menuItems: SidebarNavItem[];
+  /** Secciones con etiqueta personalizada (PANEL, REPORTES, SISTEMA…) */
+  sections?: SidebarSection[];
+  /** Compatibilidad: items bajo etiqueta "Menú" */
+  menuItems?: SidebarNavItem[];
+  /** Compatibilidad: items bajo etiqueta "Cuenta" */
   accountItems?: SidebarNavItem[];
+  /** Compatibilidad: items bajo etiqueta "Soporte" */
   supportItems?: SidebarNavItem[];
-  onlineStatus?: string;
+  /** Badge de modo en el sidebar: "MODO ADMINISTRADOR", "MODO AGENTE"… */
+  modeBadge?: string;
   children?: ReactNode;
 }
 
 export function AppShell({
-  menuItems,
+  sections,
+  menuItems = [],
   accountItems = [],
   supportItems = [],
-  onlineStatus,
+  modeBadge,
 }: AppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,8 +69,16 @@ export function AppShell({
     navigate("/auth/login");
   };
 
+  // Construye secciones desde legacy props si no se pasa `sections`
+  const allSections: SidebarSection[] = sections ?? [
+    ...(menuItems.length ? [{ label: "Menú", items: menuItems }] : []),
+    ...(accountItems.length ? [{ label: "Cuenta", items: accountItems }] : []),
+    ...(supportItems.length ? [{ label: "Soporte", items: supportItems }] : []),
+  ];
+
   return (
     <div data-theme="app" className="flex h-screen overflow-hidden bg-[#F9FAFB] font-sans text-zinc-900">
+      {/* Overlay móvil */}
       {sidebarOpen && (
         <button
           type="button"
@@ -68,77 +88,74 @@ export function AppShell({
         />
       )}
 
+      {/* Sidebar oscuro */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-40 w-64 shrink-0
-          bg-white border-r border-zinc-200 flex flex-col
+          bg-zinc-900 flex flex-col
           transform transition-transform duration-300 ease-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           lg:static lg:translate-x-0 lg:transition-none
         `}
       >
+        {/* Logo */}
         <div className="px-5 pt-6 pb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-white text-sm font-bold">T</span>
             </div>
-            <span className="text-base font-bold text-zinc-900">TicketHub</span>
+            <span className="text-base font-bold text-white">TicketHub</span>
           </div>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden w-8 h-8 rounded-md text-zinc-500 hover:bg-zinc-100 flex items-center justify-center"
+            className="lg:hidden w-8 h-8 rounded-md text-zinc-400 hover:bg-white/10 flex items-center justify-center"
             aria-label="Cerrar menú"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {onlineStatus && (
-          <div className="mx-4 mb-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-100">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-medium text-emerald-700">{onlineStatus}</span>
+        {/* Badge de modo (MODO ADMINISTRADOR / MODO AGENTE) */}
+        {modeBadge && (
+          <div className="mx-4 mb-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-[11px] font-semibold text-emerald-400 tracking-widest uppercase">
+              {modeBadge}
+            </span>
           </div>
         )}
 
-        <SidebarSection label="Menú" />
-        <nav className="px-2 space-y-0.5 flex-1 overflow-y-auto">
-          {menuItems.map((item) => (
-            <SidebarItem key={item.label} item={item} pathname={location.pathname} />
+        {/* Navegación por secciones */}
+        <nav className="px-2 flex-1 overflow-y-auto">
+          {allSections.map((section, i) => (
+            <div key={section.label} className={i > 0 ? "mt-5" : ""}>
+              <p className="px-3 pb-1 text-[10px] font-semibold tracking-widest uppercase text-zinc-500">
+                {section.label}
+              </p>
+              <div className="space-y-0.5">
+                {section.items.map((item) => (
+                  <SidebarItem key={item.label} item={item} pathname={location.pathname} />
+                ))}
+              </div>
+            </div>
           ))}
-
-          {accountItems.length > 0 && (
-            <>
-              <SidebarSection label="Cuenta" className="mt-6" />
-              {accountItems.map((item) => (
-                <SidebarItem key={item.label} item={item} pathname={location.pathname} />
-              ))}
-            </>
-          )}
-
-          {supportItems.length > 0 && (
-            <>
-              <SidebarSection label="Soporte" className="mt-6" />
-              {supportItems.map((item) => (
-                <SidebarItem key={item.label} item={item} pathname={location.pathname} />
-              ))}
-            </>
-          )}
         </nav>
 
-        <div className="p-4 border-t border-zinc-100">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F9FAFB]">
+        {/* Perfil de usuario */}
+        <div className="p-4 border-t border-zinc-800">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
               <span className="text-white text-xs font-bold">{initials}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-zinc-900 truncate">{fullName}</p>
-              <p className="text-[11px] text-zinc-500 capitalize">{user?.rol || "Usuario"}</p>
+              <p className="text-[13px] font-semibold text-white truncate">{fullName}</p>
+              <p className="text-[11px] text-zinc-400 capitalize">{user?.rol || "Usuario"}</p>
             </div>
             <button
               type="button"
               onClick={handleLogout}
-              className="shrink-0 w-8 h-8 rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-red-500 flex items-center justify-center transition"
+              className="shrink-0 w-8 h-8 rounded-md text-zinc-400 hover:bg-white/10 hover:text-red-400 flex items-center justify-center transition"
               aria-label="Cerrar sesión"
             >
               <LogOut className="w-4 h-4" />
@@ -147,6 +164,7 @@ export function AppShell({
         </div>
       </aside>
 
+      {/* Área de contenido principal */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <header className="h-16 shrink-0 bg-white border-b border-zinc-200 flex items-center px-4 sm:px-6 gap-3">
           <button
@@ -158,9 +176,8 @@ export function AppShell({
             <Menu className="w-5 h-5" />
           </button>
 
-          {/* Barra de búsqueda CORREGIDA */}
-          <div 
-            onClick={() => window.location.href = "/buscar"}
+          <div
+            onClick={() => (window.location.href = "/buscar")}
             className="hidden md:flex flex-1 max-w-md items-center gap-2 h-9 px-3 rounded-lg bg-zinc-100 text-sm text-zinc-400 cursor-pointer hover:bg-zinc-200 transition"
           >
             <Search className="w-4 h-4 shrink-0" />
@@ -169,10 +186,9 @@ export function AppShell({
 
           <div className="flex-1 md:flex-none" />
 
-          {/* Botón de notificaciones CORREGIDO */}
           <button
             type="button"
-            onClick={() => window.location.href = "/notificaciones"}
+            onClick={() => (window.location.href = "/notificaciones")}
             className="relative shrink-0 w-9 h-9 rounded-full bg-zinc-100 flex items-center justify-center hover:bg-zinc-200 transition"
             aria-label="Notificaciones"
           >
@@ -195,16 +211,6 @@ export function AppShell({
   );
 }
 
-function SidebarSection({ label, className = "" }: { label: string; className?: string }) {
-  return (
-    <p
-      className={`px-5 pb-1 text-[11px] font-semibold tracking-wider uppercase text-zinc-400 ${className}`}
-    >
-      {label}
-    </p>
-  );
-}
-
 function SidebarItem({
   item,
   pathname,
@@ -220,7 +226,7 @@ function SidebarItem({
       <button
         type="button"
         onClick={() => alert(`"${item.label}" — próximamente.`)}
-        className={`${baseClass} text-zinc-600 hover:bg-zinc-50`}
+        className={`${baseClass} text-zinc-400 hover:text-white hover:bg-white/10`}
       >
         <span className="text-zinc-500">{item.icon}</span>
         <span className="flex-1 text-left">{item.label}</span>
@@ -238,16 +244,18 @@ function SidebarItem({
     <NavLink
       to={item.to}
       className={`${baseClass} ${
-        isActive ? "bg-primary-faint text-primary" : "text-zinc-600 hover:bg-zinc-50"
+        isActive
+          ? "bg-white/10 text-white"
+          : "text-zinc-400 hover:text-white hover:bg-white/10"
       }`}
     >
       {isActive && (
         <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-primary" />
       )}
-      <span className={isActive ? "text-primary" : "text-zinc-500"}>{item.icon}</span>
+      <span className={isActive ? "text-white" : "text-zinc-500"}>{item.icon}</span>
       <span className="flex-1">{item.label}</span>
       {item.badge !== undefined && (
-        <span className="ml-auto text-xs font-semibold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-600">
+        <span className="ml-auto text-xs font-semibold px-1.5 py-0.5 rounded-full bg-white/10 text-zinc-300">
           {item.badge}
         </span>
       )}
