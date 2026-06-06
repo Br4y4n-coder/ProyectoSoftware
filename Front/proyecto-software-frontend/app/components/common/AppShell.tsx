@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
-import { Bell, LogOut, Menu, Search, X } from "lucide-react";
+import { LogOut, Menu, Search, X } from "lucide-react";
+import NotificationsBell from "./NotificationsBell";
 import { useAuth } from "../../contexts/AuthContext";
 import type { AuthUser } from "../../types/auth";
 
@@ -59,11 +60,8 @@ export function AppShell({
     setSidebarOpen(false);
   }, [location.pathname]);
 
-  const initials = useMemo(() => {
-    const a = user?.nombres?.[0] || "";
-    const b = user?.apellidos?.[0] || "";
-    return (a + b).toUpperCase() || "U";
-  }, [user?.nombres, user?.apellidos]);
+  const initials =
+    ((user?.nombres?.[0] || "") + (user?.apellidos?.[0] || "")).toUpperCase() || "U";
 
   if (!isAuthenticated) return null;
 
@@ -212,15 +210,7 @@ export function AppShell({
             </>
           )}
 
-          <button
-            type="button"
-            onClick={() => (window.location.href = "/notificaciones")}
-            className="relative shrink-0 w-9 h-9 rounded-full bg-zinc-100 flex items-center justify-center hover:bg-zinc-200 transition"
-            aria-label="Notificaciones"
-          >
-            <Bell className="w-4 h-4 text-zinc-600" />
-            <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white" />
-          </button>
+          <NotificationsBell />
 
           <div className="shrink-0 w-9 h-9 rounded-full bg-primary flex items-center justify-center">
             <span className="text-white text-xs font-bold">{initials}</span>

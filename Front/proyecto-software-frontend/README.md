@@ -1,84 +1,181 @@
-# TicketHub — Frontend
+# SIT Frontend
 
-React 19 + TypeScript + Tailwind CSS v4 + React Router 7.
+React 19 · TypeScript · Tailwind CSS v4 · React Router 7 · Vite
+
+---
+
+## Requisitos
+
+- Node.js 20+
+
+---
 
 ## Ejecutar el proyecto
 
 ```bash
 npm install
 npm run dev
+# App disponible en http://localhost:5173
 ```
 
-Abre la URL que muestra Vite (por defecto `http://localhost:5173`).
+---
 
-## Navegación — pantallas TicketHub
+## Scripts disponibles
+
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Servidor de desarrollo (Vite HMR) |
+| `npm run build` | Build de producción |
+| `npm run start` | Sirve el build de producción |
+| `npm run typecheck` | Verificación de tipos TypeScript |
+| `npm run lint` | Revisión con ESLint |
+| `npm run lint:fix` | Corregir errores de lint automáticamente |
+| `npm run format` | Formatear código con Prettier |
+| `npm run test` | Pruebas unitarias con Vitest (una sola ejecución) |
+| `npm run test:watch` | Pruebas en modo watch |
+| `npm run test:coverage` | Pruebas + reporte de cobertura (V8) |
+| `npm run test:e2e` | Pruebas End-to-End con Playwright |
+| `npm run test:e2e:ui` | Playwright con interfaz visual |
+
+---
+
+## Roles y rutas
+
+Tras iniciar sesión, `/` redirige automáticamente según `user.rol`:
+
+| Rol | Redirección |
+|---|---|
+| `agente` | `/agent/dashboard` |
+| `administrador` | `/admin/dashboard` |
+| `usuario` | Home del cliente |
 
 ### Rol Agente
 
 | Ruta | Pantalla |
-|------|----------|
-| `/agent/dashboard` | Dashboard del agente (KPIs, gráfico, tickets, actividad) |
-| `/agent/queue` | Cola de tickets (filtros, tabs, selección múltiple) |
-| `/agent/tickets/:id` | Detalle de ticket (ej. `/agent/tickets/TKT-1038`) |
+|---|---|
+| `/agent/dashboard` | Dashboard con KPIs y tabla de tickets asignados |
+| `/agent/queue` | Cola general de tickets (filtros, tabs, selección múltiple) |
+| `/agent/tickets/:id` | Detalle de ticket (historial, cambio de estado, asignación) |
+| `/agent/mis-asignados` | Mis tickets asignados (filtros y acciones rápidas) |
 
 ### Rol Administrador
 
 | Ruta | Pantalla |
-|------|----------|
-| `/admin/dashboard` | Dashboard de administración |
+|---|---|
+| `/admin/dashboard` | Dashboard con KPIs, gráficos y tickets en riesgo |
+| `/admin/tickets` | Gestión de tickets (tabla, filtros, panel de detalle, asignación) |
 | `/admin/users` | Gestión de usuarios |
-| `/admin/assign-ticket` o `/admin/assign-ticket/TKT-1040` | Asignación de ticket |
+| `/admin/agentes` | Gestión de agentes |
+| `/admin/categorias` | Categorías de tickets |
+| `/admin/sla` | Reglas de SLA |
+| `/admin/metricas` | Métricas y estadísticas |
+| `/admin/auditoria` | Logs de auditoría |
+| `/admin/exportar` | Exportar datos |
+| `/admin/configuracion` | Configuración del sistema |
+| `/admin/integraciones` | Integraciones externas |
 
-Tras iniciar sesión, `/` redirige automáticamente según `user.rol`:
+### Rutas públicas (autenticación)
 
-- `agente` → `/agent/dashboard`
-- `administrador` → `/admin/dashboard`
-- `usuario` → home de cliente (layout existente)
+| Ruta | Pantalla |
+|---|---|
+| `/auth/login` | Inicio de sesión |
+| `/auth/register` | Registro de cuenta |
+| `/auth/verify-email` | Verificación de correo |
+| `/auth/reset-password` | Restablecer contraseña |
 
-### Probar sin backend (solo UI)
+---
 
-1. Inicia sesión con una cuenta real, **o**
-2. En DevTools → Application → Local Storage, define:
-   - `auth_token` (cualquier valor no vacío)
-   - `user` → JSON, por ejemplo agente:
-
-```json
-{
-  "nombres": "Andrés",
-  "apellidos": "Rodríguez",
-  "rol": "agente",
-  "email": "andres@empresa.com"
-}
-```
-
-Para admin, usa `"rol": "administrador"`.
-
-## Estructura de código
-
-El proyecto usa la convención de **React Router 7** bajo `app/` (equivalente a `src/` en otros setups):
+## Estructura de carpetas
 
 ```
 app/
-  components/common/   # StatCard, AppShell, Badge, etc.
-  data/mockData.ts     # Datos de ejemplo
-  hooks/useMockData.ts
-  layouts/             # AgentLayout, AdminLayout, MainLayout
-  pages/agent/         # Pantallas agente (.tsx)
-  pages/admin/         # Pantallas admin (.tsx)
-  types/index.ts
-  routes.ts
+├── api/                  # Cliente axios y wrapper apiFetch
+├── components/
+│   ├── admin/            # Componentes exclusivos del panel admin (AssignTicketModal, etc.)
+│   └── common/           # Componentes compartidos (AppShell, Badge, StatusBadge, etc.)
+├── contexts/             # AuthContext — autenticación global
+├── data/                 # Datos estáticos y helpers
+├── hooks/                # useDashboardData, useAdminDashboard, etc.
+├── layouts/              # AdminLayout, AgentLayout, MainLayout
+├── pages/
+│   ├── admin/            # Pantallas del panel administrador (.tsx)
+│   └── agent/            # Pantallas del agente (.jsx)
+├── services/             # authService, ticketsService, config
+├── tests/
+│   ├── unit/             # Pruebas unitarias Vitest
+│   └── e2e/              # Pruebas E2E Playwright
+├── types/                # Tipos TypeScript (auth, tickets, etc.)
+└── routes.ts             # Definición de rutas React Router 7
 ```
 
-## Scripts
+---
 
-| Comando | Descripción |
-|---------|-------------|
-| `npm run dev` | Servidor de desarrollo |
-| `npm run build` | Build de producción |
-| `npm run typecheck` | Verificación de tipos |
+## Autenticación
 
-## Dependencias UI
+El contexto `AuthContext` gestiona el estado de sesión global:
 
-- **lucide-react** — iconos
-- **recharts** — gráficos
-- **date-fns** — fechas en español
+- Tokens almacenados en `localStorage` (`auth_token`, `refresh_token`, `user`)
+- Renovación automática del access token via refresh token
+- Redirección automática a `/auth/login` si no hay sesión activa
+
+### Probar sin backend
+
+En DevTools → Application → Local Storage, define:
+- `auth_token`: cualquier valor no vacío
+- `user`: JSON con los datos del usuario
+
+```json
+// Agente
+{ "nombres": "Ana", "apellidos": "Pérez", "rol": "agente", "id": 1 }
+
+// Administrador
+{ "nombres": "Carlos", "apellidos": "Gómez", "rol": "administrador", "id": 2 }
+```
+
+---
+
+## Variables de entorno
+
+Crea un archivo `.env` en la raíz del frontend:
+
+```env
+VITE_API_URL=http://localhost:8080
+```
+
+Si no se define, el cliente usa `http://localhost:8080` por defecto.
+
+---
+
+## Dependencias principales
+
+| Paquete | Uso |
+|---|---|
+| `react` + `react-dom` | UI — React 19 |
+| `react-router` | Enrutamiento (React Router 7) |
+| `axios` | Cliente HTTP para la API REST |
+| `tailwindcss` | Estilos (Tailwind CSS v4) |
+| `lucide-react` | Iconos |
+| `recharts` | Gráficos en el dashboard |
+| `date-fns` | Formateo de fechas |
+| `vitest` | Pruebas unitarias |
+| `@testing-library/react` | Renderizado de componentes en tests |
+| `@playwright/test` | Pruebas E2E |
+
+---
+
+## Pruebas
+
+```bash
+# Unitarias
+npm run test
+
+# Con cobertura (reporte en coverage/)
+npm run test:coverage
+
+# E2E — requiere servidor corriendo
+npm run test:e2e
+```
+
+Umbral de cobertura configurado: **85%** en líneas, funciones y statements.
+
+Ver detalle completo en [TEST\_DOCUMENTATION.md](../../TEST_DOCUMENTATION.md).

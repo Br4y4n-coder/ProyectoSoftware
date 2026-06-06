@@ -26,7 +26,7 @@
          ║     (3+)     ║
          ╠══════════════╣
          ║  Unitarias   ║   ← JUnit 5 / Vitest (Caja Blanca)
-         ║   (35+)      ║
+         ║   (52+)      ║
          ╚══════════════╝
 ```
 
@@ -198,6 +198,30 @@ app.security.bloqueo-minutos=30
 | PU-CTX-05 | logout() limpia localStorage y cambia estado |
 | PU-CTX-06 | logout() funciona aunque el servidor falle (best-effort) |
 | PU-CTX-07 | useAuth() fuera de AuthProvider lanza error descriptivo |
+
+### 4.6 dashboardFormat.test.ts
+**Ruta:** `app/tests/unit/dashboardFormat.test.ts`
+**Módulo:** `app/hooks/useDashboardData` — función `formatMinutos`
+**Tipo de caja:** Blanca — se verifican todas las ramas de la función de formateo de tiempos.
+
+| ID | Descripción |
+|---|---|
+| PU-DASH-FMT-01 | Devuelve `—` cuando el argumento es `null` |
+| PU-DASH-FMT-02 | Formatea minutos menores a 60 como `"N min"` (casos: 0, 45, 59) |
+| PU-DASH-FMT-03 | Formatea valores ≥ 60 como `"Xh Ym"` (casos: 60, 134, 241) |
+| PU-DASH-FMT-04 | Usa valor absoluto para tiempos negativos (SLA vencido) |
+
+### 4.7 apiFetch.test.ts
+**Ruta:** `app/tests/unit/apiFetch.test.ts`
+**Módulo:** `app/api/apiFetch` — wrapper estilo `fetch` sobre axios
+**Tipo de caja:** Blanca — se mockea `apiClient.request` y se verifica el comportamiento del adaptador.
+
+| ID | Descripción |
+|---|---|
+| PU-FETCH-01 | Respuesta 2xx: `ok=true` y `json()` resuelve con los datos |
+| PU-FETCH-02 | Error HTTP (4xx/5xx): `ok=false` sin lanzar excepción (igual que `fetch`) |
+| PU-FETCH-03 | Error de red (sin respuesta): relanza la excepción original |
+| PU-FETCH-04 | Pasa `method`, `body` y `responseType` correctamente al cliente axios |
 
 ---
 
@@ -405,22 +429,24 @@ npm run test:e2e
 | 5 | PU-AUTH-SVC-01 a 09 | Unitaria | Blanca | authService.test.ts | Vitest |
 | 6 | PU-TKT-SVC-01 a 09 | Unitaria | Blanca | ticketsService.test.ts | Vitest |
 | 7 | PU-CTX-01 a 07 | Unitaria | Gris | AuthContext.test.tsx | Vitest + RTL |
-| 8 | INT-01-A a D | Integración | Gris | AuthIntegrationTest.java | Spring Boot + H2 |
-| 9 | INT-02-A a C | Integración | Gris | TicketIntegrationTest.java | Spring Boot + H2 |
-| 10 | INT-03-A a C | Integración | Gris | UsuarioIntegrationTest.java | Spring Boot + H2 |
-| 11 | E2E-AUTH-01 a 04 | E2E | Negra | auth.spec.ts | Playwright |
-| 12 | E2E-TKT-01 a 03 | E2E | Negra | tickets.spec.ts | Playwright |
-| 13 | E2E-ADM-01 a 04 | E2E | Negra | admin.spec.ts | Playwright |
+| 8 | PU-DASH-FMT-01 a 04 | Unitaria | Blanca | dashboardFormat.test.ts | Vitest |
+| 9 | PU-FETCH-01 a 04 | Unitaria | Blanca | apiFetch.test.ts | Vitest |
+| 10 | INT-01-A a D | Integración | Gris | AuthIntegrationTest.java | Spring Boot + H2 |
+| 11 | INT-02-A a C | Integración | Gris | TicketIntegrationTest.java | Spring Boot + H2 |
+| 12 | INT-03-A a C | Integración | Gris | UsuarioIntegrationTest.java | Spring Boot + H2 |
+| 13 | E2E-AUTH-01 a 04 | E2E | Negra | auth.spec.ts | Playwright |
+| 14 | E2E-TKT-01 a 03 | E2E | Negra | tickets.spec.ts | Playwright |
+| 15 | E2E-ADM-01 a 04 | E2E | Negra | admin.spec.ts | Playwright |
 
 ### Conteo total
 
 | Categoría | Cantidad |
 |---|---|
 | Pruebas unitarias (backend) | 27 |
-| Pruebas unitarias (frontend) | 44 |
+| Pruebas unitarias (frontend) | 52 |
 | Pruebas de integración | 10 |
 | Pruebas E2E | 11 |
-| **TOTAL** | **92 pruebas** |
+| **TOTAL** | **100 pruebas** |
 
 ### Cobertura de funcionalidades
 
@@ -432,6 +458,8 @@ npm run test:e2e
 | ticketsService.js | Todos los 7 métodos | 100% |
 | AuthContext | login, logout, estado inicial, useAuth | ~90% |
 | Badge | Todas las 7 variantes + props | 100% |
+| formatMinutos | null, minutos, horas/minutos, negativos | 100% |
+| apiFetch | 2xx, 4xx/5xx, error de red, opciones HTTP | 100% |
 
 ---
 

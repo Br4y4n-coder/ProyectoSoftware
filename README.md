@@ -1,150 +1,91 @@
-## Descripción del Proyecto
-Sistema Web de Gestión de Tickets de Soporte
+# SIT — Sistema de Tickets de Soporte Interno
 
-Plataforma web desarrollada para registrar, organizar y dar seguimiento a las solicitudes de soporte realizadas por los usuarios dentro de una empresa de tecnología. El sistema permite centralizar la gestión de incidencias, optimizar los tiempos de atención y mejorar la trazabilidad de los casos mediante un flujo estructurado de creación, asignación y cierre de tickets.
+Aplicación web full-stack para la gestión centralizada de tickets de soporte técnico. Permite a los usuarios registrar incidencias, a los agentes gestionarlas y resolverlas, y a los administradores supervisar métricas, asignar cargas de trabajo y auditar el sistema.
 
-Stack Tecnológico
-Tecnología	Uso
-React	Interfaz de usuario
-TypeScript	Tipado estático
-Vite	Entorno de desarrollo y compilación
-React Router	Navegación entre páginas
-Tailwind CSS	Diseño y estilos responsivos
-PostgreSQL	Base de datos relacional
-Node.js	Entorno de ejecución del backend
-Express.js	API REST
-GitHub	Control de versiones
-Inicio Rápido
+---
+
+## Arquitectura general
+
+```
+ProyectoSoftware/
+├── backend/                  # API REST — Spring Boot 3.5 + Java 17 + PostgreSQL
+└── Front/
+    └── proyecto-software-frontend/   # SPA — React 19 + TypeScript + Tailwind CSS v4
+```
+
+La comunicación entre frontend y backend se realiza vía HTTP/JSON. El backend expone una API REST documentada con Swagger/OpenAPI.
+
+---
+
+## Stack tecnológico
+
+| Capa | Tecnología |
+|---|---|
+| Backend | Spring Boot 3.5, Java 17, Spring Security, JWT |
+| Base de datos | PostgreSQL (producción), H2 en memoria (tests) |
+| Frontend | React 19, TypeScript, Tailwind CSS v4, React Router 7, Vite |
+| Pruebas (BE) | JUnit 5, Mockito, Spring Boot Test |
+| Pruebas (FE) | Vitest, React Testing Library, Playwright |
+| Contenedores | Docker (Dockerfile multietapa en backend) |
+| Documentación API | Swagger UI — `/swagger-ui/index.html` |
+
+---
+
+## Inicio rápido
+
+### Requisitos previos
+
+- Java 17+
+- Maven 3.8+
+- Node.js 20+
+- PostgreSQL (o usar la BD de Render configurada en `application.properties`)
+
+### 1. Levantar el backend
+
+```bash
+cd backend
+mvn spring-boot:run
+# API disponible en http://localhost:8080
+# Swagger: http://localhost:8080/swagger-ui/index.html
+```
+
+### 2. Levantar el frontend
+
+```bash
+cd Front/proyecto-software-frontend
 npm install
 npm run dev
+# App disponible en http://localhost:5173
+```
 
+---
 
+## Roles del sistema
 
-Compilación para producción:
+| Rol | Acceso |
+|---|---|
+| `usuario` | Crear y consultar sus propios tickets |
+| `agente` | Cola de tickets, asignación propia, detalle y cambio de estado |
+| `administrador` | Panel completo: tickets, usuarios, agentes, métricas, SLA, auditoría |
 
-npm run build
-Roles del Sistema
-Usuario
-Crear solicitudes de soporte.
-Consultar el estado de los tickets.
-Visualizar historial de solicitudes.
-Adjuntar información relevante al caso.
-Técnico
-Visualizar tickets asignados.
-Actualizar estados de atención.
-Registrar soluciones implementadas.
-Cerrar tickets resueltos.
-Administrador
-Gestionar usuarios.
-Asignar tickets a técnicos.
-Supervisar métricas e indicadores.
-Administrar categorías y prioridades.
-Flujos Principales
-Usuario
+---
 
-Inicio de sesión → Dashboard → Crear Ticket → Seguimiento → Cierre del Ticket
+## Documentación adicional
 
-Técnico
+- [README Backend](./backend/README.md) — configuración, endpoints y pruebas del servidor
+- [README Frontend](./Front/proyecto-software-frontend/README.md) — rutas, estructura y scripts del cliente
+- [TEST\_DOCUMENTATION.md](./TEST_DOCUMENTATION.md) — estrategia de pruebas, casos y cobertura
 
-Inicio de sesión → Bandeja de Tickets → Atención del Caso → Actualización de Estado → Resolución
+---
 
-Administrador
+## API en producción
 
-Inicio de sesión → Gestión de Tickets → Asignación → Seguimiento → Reportes
+La API está desplegada en Render:
+```
+https://proyecto-ticket-26xq.onrender.com
+https://proyecto-ticket-26xq.onrender.com/swagger-ui/index.html
+```
 
-Arquitectura del Proyecto
-src/
-├── components/
-│   ├── tickets/
-│   ├── dashboard/
-│   ├── users/
-│   └── ui/
-├── pages/
-├── routes/
-├── services/
-├── hooks/
-├── context/
-├── database/
-├── utils/
-└── assets/
-Capas del Sistema
-Presentación
+---
 
-Interfaces desarrolladas en React para la interacción de usuarios, técnicos y administradores.
-
-Lógica de Negocio
-
-Gestiona la creación, actualización, asignación y cierre de tickets.
-
-Persistencia
-
-PostgreSQL almacena usuarios, tickets, categorías, estados y registros históricos.
-
-API
-
-Servicios REST para comunicación entre frontend y backend.
-
-Módulos del Sistema
-Gestión de Tickets
-Creación de tickets.
-Actualización de estado.
-Asignación de responsables.
-Cierre y documentación de soluciones.
-Gestión de Usuarios
-Registro.
-Inicio de sesión.
-Roles y permisos.
-Dashboard
-Indicadores de tickets abiertos.
-Tickets en proceso.
-Tickets cerrados.
-Estadísticas de atención.
-Reportes
-Historial de incidencias.
-Tiempo promedio de respuesta.
-Rendimiento de técnicos.
-Base de Datos
-Tablas Principales
-Usuarios
-id_usuario
-nombre
-correo
-contraseña
-rol
-Tickets
-id_ticket
-titulo
-descripcion
-fecha_creacion
-prioridad
-estado
-usuario_id
-Categorías
-id_categoria
-nombre_categoria
-Historial
-id_historial
-ticket_id
-fecha
-accion_realizada
-Tecnologías Utilizadas
-React
-TypeScript
-Node.js
-Express.js
-PostgreSQL
-Tailwind CSS
-GitHub
-Vite
-Guía de Instalación
-Clonar el repositorio desde GitHub.
-Instalar dependencias con npm install.
-Configurar las variables de entorno.
-Crear la base de datos PostgreSQL.
-Ejecutar las migraciones.
-Iniciar el servidor backend.
-Ejecutar el frontend con npm run dev.
-Arquitectura General
-
-El sistema sigue una arquitectura cliente-servidor compuesta por un frontend desarrollado en React y un backend basado en Node.js y Express. La información es almacenada en PostgreSQL y consumida mediante servicios REST que permiten gestionar tickets, usuarios y reportes de manera segura y escalable.
-
+*Proyecto de ingeniería de software — 2026*
