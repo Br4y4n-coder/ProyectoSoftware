@@ -10,6 +10,9 @@ import com.proyectoarquitectura.app.models.dto.auth.ResetPasswordRequest;
 import com.proyectoarquitectura.app.models.dto.auth.UsuarioResponse;
 import com.proyectoarquitectura.app.security.CustomUserDetails;
 import com.proyectoarquitectura.app.service.auth.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 import java.util.Map;
 
+@Tag(name = "Autenticación", description = "Registro, login, verificación de correo y recuperación de contraseña")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -34,6 +38,7 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Registrar usuario", description = "Crea una nueva cuenta. Se envía un correo de verificación al email proporcionado.")
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UsuarioResponse>> register(@Valid @RequestBody RegisterRequest req) {
         UsuarioResponse u = authService.register(req);
@@ -45,6 +50,7 @@ public class AuthController {
                 .build());
     }
 
+    @Operation(summary = "Verificar correo electrónico", description = "Activa la cuenta usando el token recibido por email.")
     @GetMapping("/verify-email")
     public ResponseEntity<ApiResponse<Object>> verifyEmail(@RequestParam("token") String token) {
         authService.verifyEmail(token);
@@ -55,6 +61,7 @@ public class AuthController {
                 .build());
     }
 
+    @Operation(summary = "Iniciar sesión", description = "Autentica al usuario y retorna los tokens JWT de acceso y refresco.")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest req,
                                                            HttpServletRequest httpReq) {
@@ -67,6 +74,7 @@ public class AuthController {
                 .build());
     }
 
+    @Operation(summary = "Renovar token", description = "Genera un nuevo access token usando un refresh token válido.")
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshTokenRequest req) {
         AuthResponse data = authService.refresh(req.getRefreshToken());
@@ -78,6 +86,7 @@ public class AuthController {
                 .build());
     }
 
+    @Operation(summary = "Cerrar sesión", description = "Invalida el refresh token del usuario.")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Object>> logout(@RequestBody(required = false) RefreshTokenRequest req) {
         authService.logout(req == null ? null : req.getRefreshToken());
@@ -88,6 +97,7 @@ public class AuthController {
                 .build());
     }
 
+    @Operation(summary = "Solicitar restablecimiento de contraseña", description = "Envía un enlace de reset al correo registrado si existe en el sistema.")
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<Object>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest req) {
         authService.forgotPassword(req.getCorreo());
@@ -98,6 +108,7 @@ public class AuthController {
                 .build());
     }
 
+    @Operation(summary = "Restablecer contraseña", description = "Actualiza la contraseña usando el token enviado por email.")
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<Object>> resetPassword(@Valid @RequestBody ResetPasswordRequest req) {
         authService.resetPassword(req.getToken(), req.getNuevaContrasena());
@@ -108,6 +119,8 @@ public class AuthController {
                 .build());
     }
 
+    @Operation(summary = "Obtener usuario autenticado", description = "Retorna los datos del usuario actual junto con sus roles.")
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<Map<String, Object>>> me(@AuthenticationPrincipal CustomUserDetails details) {
         if (details == null) {

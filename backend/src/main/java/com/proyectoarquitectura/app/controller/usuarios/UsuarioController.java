@@ -6,6 +6,9 @@ import com.proyectoarquitectura.app.models.dto.auth.UsuarioResponse;
 import com.proyectoarquitectura.app.models.dto.usuarios.CambiarRolRequest;
 import com.proyectoarquitectura.app.security.CustomUserDetails;
 import com.proyectoarquitectura.app.service.usuarios.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 
+@Tag(name = "Usuarios", description = "Gestión de usuarios del sistema. Solo accesible por ADMINISTRADOR.")
+@SecurityRequirement(name = "Bearer Authentication")
 @RestController
 @RequestMapping("/api/usuarios")
 @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -28,6 +33,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @Operation(summary = "Listar usuarios", description = "Retorna todos los usuarios registrados en el sistema con paginación.")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<UsuarioResponse>>> listarUsuarios(
             @PageableDefault(size = 20, sort = "id") Pageable pageable) {
@@ -35,6 +41,7 @@ public class UsuarioController {
         return ResponseEntity.ok(ok(200, "OK", data));
     }
 
+    @Operation(summary = "Cambiar rol de usuario", description = "Asigna un nuevo rol al usuario (ADMINISTRADOR, AGENTE, CLIENTE).")
     @PatchMapping("/{id}/rol")
     public ResponseEntity<ApiResponse<UsuarioResponse>> cambiarRol(@PathVariable Integer id,
                                                                    @Valid @RequestBody CambiarRolRequest req,
