@@ -20,7 +20,7 @@ export default [
   ]),
 
   layout("layouts/AdminLayout.tsx", [
-    route("admin/dashboard", "pages/admin/AdminDashboard.tsx"),
+    route("admin/dashboard", "pages/admin/AdminDashboard.jsx"),
     route("admin/users", "pages/admin/UserManagement.tsx"),
     route("admin/tickets", "pages/admin/TicketsAdmin.tsx"),
     route("admin/agentes", "pages/admin/AgentesAdmin.tsx"),

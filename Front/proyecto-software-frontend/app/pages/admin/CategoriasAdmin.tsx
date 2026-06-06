@@ -62,13 +62,6 @@ export default function CategoriasAdmin() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Categorias</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Administra las categorias de tickets
-        </p>
-      </div>
-
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div className="flex-1 flex items-center gap-2 h-10 px-3 rounded-lg bg-white border border-zinc-200">
           <Search className="w-4 h-4 text-zinc-400" />

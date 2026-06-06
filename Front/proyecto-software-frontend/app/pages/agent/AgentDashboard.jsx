@@ -68,26 +68,6 @@ export default function AgentDashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <header>
-        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900">
-          Buen día, {user?.nombres || "Agente"}
-        </h1>
-        <p className="mt-1 text-zinc-500">
-          Tienes{" "}
-          <strong className="text-zinc-800">
-            {kpis.asignados} tickets asignados
-          </strong>
-          {nCriticos > 0 && (
-            <>
-              {" "}—{" "}
-              <strong className="text-red-600">
-                {nCriticos} con prioridad alta
-              </strong>
-            </>
-          )}
-        </p>
-      </header>
-
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}

@@ -190,13 +190,6 @@ export default function UserManagement() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <header>
-        <p className="text-xs text-zinc-400">
-          Admin › <span className="text-zinc-600 font-medium">Gestión de usuarios</span>
-        </p>
-        <h1 className="text-2xl font-bold text-zinc-900 mt-0.5">Gestión de usuarios</h1>
-      </header>
-
       {mensaje && (
         <div className="rounded-xl bg-green-50 border border-green-200 p-4">
           <p className="text-green-700 text-sm">{mensaje}</p>

@@ -1,6 +1,4 @@
 import { useMemo, useState } from "react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { Link } from "react-router";
 import {
   Cell,
@@ -36,9 +34,8 @@ const AVATAR_COLORS = [
 
 export default function AdminDashboard() {
   const { data, loading, error, recargar } = useDashboardData();
-  const [rango, setRango] = useState<"dia" | "mes">("dia");
-  const [ticketAsignar, setTicketAsignar] = useState<number | null>(null);
-  const today = format(new Date(), "EEEE d MMM", { locale: es });
+  const [rango, setRango] = useState("dia");
+  const [ticketAsignar, setTicketAsignar] = useState(null);
 
   const chartData = rango === "dia" ? data?.serieDiaria : data?.serieSemanal;
   const maxCategoria = useMemo(
@@ -131,16 +128,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-zinc-900">
-            Dashboard de administración
-          </h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            Visión general del sistema · <span className="capitalize">{today}</span>
-          </p>
-        </div>
+      {/* Acciones */}
+      <header className="flex justify-end">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -203,7 +192,7 @@ export default function AdminDashboard() {
               </p>
             </div>
             <div className="flex items-center rounded-lg bg-zinc-100 p-0.5 text-xs font-semibold">
-              {(["dia", "mes"] as const).map((r) => (
+              {["dia", "mes"].map((r) => (
                 <button
                   key={r}
                   type="button"
@@ -391,9 +380,7 @@ export default function AdminDashboard() {
                         <Cell key={entry.name} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip
-                      formatter={(v, name) => [`${v} tickets`, name]}
-                    />
+                    <Tooltip formatter={(v, name) => [`${v} tickets`, name]} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">

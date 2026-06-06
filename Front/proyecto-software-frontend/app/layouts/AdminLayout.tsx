@@ -11,6 +11,7 @@ import {
   Users,
   UserCog,
 } from "lucide-react";
+import { useLocation } from "react-router";
 import { AppShell, type SidebarSection } from "../components/common/AppShell";
 
 const panelItems: SidebarSection = {
@@ -42,11 +43,46 @@ const sistemaItems: SidebarSection = {
   ],
 };
 
+/** Título de cada ruta para la barra superior (estilo mockup: "Admin › Página"). */
+const TITULOS: Array<{ prefix: string; titulo: string }> = [
+  { prefix: "/admin/dashboard", titulo: "Dashboard de administración" },
+  { prefix: "/admin/tickets", titulo: "Gestión de tickets" },
+  { prefix: "/admin/users", titulo: "Gestión de usuarios" },
+  { prefix: "/admin/agentes", titulo: "Gestión de agentes" },
+  { prefix: "/admin/categorias", titulo: "Categorías" },
+  { prefix: "/admin/sla", titulo: "SLA y reglas" },
+  { prefix: "/admin/metricas", titulo: "Métricas" },
+  { prefix: "/admin/auditoria", titulo: "Auditoría" },
+  { prefix: "/admin/exportar", titulo: "Exportar datos" },
+  { prefix: "/admin/configuracion", titulo: "Configuración" },
+  { prefix: "/admin/integraciones", titulo: "Integraciones" },
+  { prefix: "/admin/assign-ticket", titulo: "Asignar ticket" },
+];
+
+function AdminHeaderTitle() {
+  const { pathname } = useLocation();
+  const titulo =
+    TITULOS.find((t) => pathname.startsWith(t.prefix))?.titulo ?? "Panel de administración";
+
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] text-zinc-400 leading-tight truncate">
+        Admin › <span className="text-zinc-500">{titulo}</span>
+      </p>
+      <p className="text-base sm:text-lg font-bold text-zinc-900 leading-tight truncate">
+        {titulo}
+      </p>
+    </div>
+  );
+}
+
 export default function AdminLayout() {
   return (
     <AppShell
       sections={[panelItems, reportesItems, sistemaItems]}
       modeBadge="MODO ADMINISTRADOR"
+      headerLeft={<AdminHeaderTitle />}
+      showSearch={false}
     />
   );
 }

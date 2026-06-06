@@ -114,13 +114,6 @@ export default function ConfiguracionAdmin() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Configuración</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Configuración general del sistema
-        </p>
-      </div>
-
       {saved && (
         <div className="rounded-xl bg-green-50 border border-green-200 p-4">
           <p className="text-green-700 text-sm">Configuración guardada correctamente</p>

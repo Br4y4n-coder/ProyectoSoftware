@@ -62,11 +62,6 @@ export default function TicketsAdmin() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-zinc-900 mb-2">Gestión de Tickets</h1>
-      <p className="text-zinc-500 mb-8">
-        Administra todos los tickets del sistema
-      </p>
-
       <div className="rounded-xl bg-white border border-zinc-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
