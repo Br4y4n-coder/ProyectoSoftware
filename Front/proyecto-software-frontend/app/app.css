@@ -65,5 +65,8 @@ body {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+  /* Sin "forwards": si el transform quedara aplicado permanentemente,
+     los modales con position:fixed se posicionarían relativos a este
+     contenedor (cortados bajo la barra superior) en vez del viewport. */
+  animation: fadeIn 0.5s ease-out;
 }
