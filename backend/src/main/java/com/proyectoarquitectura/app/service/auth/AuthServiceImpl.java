@@ -16,6 +16,7 @@ import com.proyectoarquitectura.app.repository.UsuarioRepository;
 import com.proyectoarquitectura.app.security.JwtService;
 import com.proyectoarquitectura.app.security.SecurityAuditLogger;
 import com.proyectoarquitectura.app.security.TokenPurpose;
+import com.proyectoarquitectura.app.service.auditoria.AuditoriaService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailService emailService;
+    private final AuditoriaService auditoriaService;
     private final int maxIntentosFallidos;
     private final int bloqueoMinutos;
 
@@ -50,6 +52,7 @@ public class AuthServiceImpl implements AuthService {
                            PasswordEncoder passwordEncoder,
                            JwtService jwtService,
                            EmailService emailService,
+                           AuditoriaService auditoriaService,
                            @Value("${app.security.max-intentos-fallidos}") int maxIntentosFallidos,
                            @Value("${app.security.bloqueo-minutos}") int bloqueoMinutos) {
         this.usuarioRepository = usuarioRepository;
@@ -59,6 +62,7 @@ public class AuthServiceImpl implements AuthService {
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.emailService = emailService;
+        this.auditoriaService = auditoriaService;
         this.maxIntentosFallidos = maxIntentosFallidos;
         this.bloqueoMinutos = bloqueoMinutos;
     }
@@ -77,18 +81,17 @@ public class AuthServiceImpl implements AuthService {
         Rol rolUsuario = rolRepository.findByNombre("usuario")
                 .orElseThrow(() -> new IllegalStateException("Rol 'usuario' no existe (ejecuta el seed)"));
 
-        Usuario u = Usuario.builder()
-                .nombres(req.getNombres().trim())
-                .apellidos(req.getApellidos().trim())
-                .correo(req.getCorreo().trim().toLowerCase())
-                .contrasenaHash(passwordEncoder.encode(req.getContrasena()))
-                .telefono(req.getTelefono())
-                .tipoDocumento(req.getTipoDocumento())
-                .numeroDocumento(req.getNumeroDocumento())
-                .rol(rolUsuario)
-                .estado("pendiente")
-                .intentosFallidos(0)
-                .build();
+        Usuario u = new Usuario();
+        u.setNombres(req.getNombres().trim());
+        u.setApellidos(req.getApellidos().trim());
+        u.setCorreo(req.getCorreo().trim().toLowerCase());
+        u.setContrasenaHash(passwordEncoder.encode(req.getContrasena()));
+        u.setTelefono(req.getTelefono());
+        u.setTipoDocumento(req.getTipoDocumento());
+        u.setNumeroDocumento(req.getNumeroDocumento());
+        u.setRol(rolUsuario);
+        u.setEstado("pendiente");
+        u.setIntentosFallidos(0);
 
         u = usuarioRepository.save(u);
 
@@ -175,24 +178,26 @@ public class AuthServiceImpl implements AuthService {
         String access = jwtService.generateAccessToken(u);
         String refresh = jwtService.generateRefreshToken(u);
 
-        Sesion sesion = Sesion.builder()
-                .usuario(u)
-                .tokenHash(jwtService.hashToken(refresh))
-                .ipOrigen(ip)
-                .userAgent(userAgent)
-                .expiraEn(LocalDateTime.now().plus(Duration.ofMillis(jwtService.getRefreshExpirationMs())))
-                .build();
+        Sesion sesion = new Sesion();
+        sesion.setUsuario(u);
+        sesion.setTokenHash(jwtService.hashToken(refresh));
+        sesion.setIpOrigen(ip);
+        sesion.setUserAgent(userAgent);
+        sesion.setExpiraEn(LocalDateTime.now().plus(Duration.ofMillis(jwtService.getRefreshExpirationMs())));
         sesionRepository.save(sesion);
 
         registrarLogAcceso(u, correo, ip, userAgent, true, "login_ok");
+        
+        // Registrar en auditoría
+        auditoriaService.registrar(u.getCorreo(), "INICIO_SESION", "Login exitoso desde IP: " + ip, ip);
 
-        return AuthResponse.builder()
-                .accessToken(access)
-                .refreshToken(refresh)
-                .tokenType("Bearer")
-                .expiresInMs(jwtService.getAccessExpirationMs())
-                .usuario(UsuarioResponse.from(u))
-                .build();
+        AuthResponse response = new AuthResponse();
+        response.setAccessToken(access);
+        response.setRefreshToken(refresh);
+        response.setTokenType("Bearer");
+        response.setExpiresInMs(jwtService.getAccessExpirationMs());
+        response.setUsuario(UsuarioResponse.from(u));
+        return response;
     }
 
     @Override
@@ -223,13 +228,13 @@ public class AuthServiceImpl implements AuthService {
 
         String access = jwtService.generateAccessToken(u);
 
-        return AuthResponse.builder()
-                .accessToken(access)
-                .refreshToken(refreshToken)
-                .tokenType("Bearer")
-                .expiresInMs(jwtService.getAccessExpirationMs())
-                .usuario(UsuarioResponse.from(u))
-                .build();
+        AuthResponse response = new AuthResponse();
+        response.setAccessToken(access);
+        response.setRefreshToken(refreshToken);
+        response.setTokenType("Bearer");
+        response.setExpiresInMs(jwtService.getAccessExpirationMs());
+        response.setUsuario(UsuarioResponse.from(u));
+        return response;
     }
 
     @Override
@@ -248,7 +253,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void forgotPassword(String correo) {
-        // Si el correo no existe igual respondemos 200 desde el controller para no filtrar que cuentas son validas.
         Optional<Usuario> opt = usuarioRepository.findByCorreo(correo.trim().toLowerCase());
         opt.ifPresent(u -> {
             String token = jwtService.generateResetPasswordToken(u);
@@ -285,14 +289,13 @@ public class AuthServiceImpl implements AuthService {
     private void registrarLogAcceso(Usuario u, String correo, String ip, String userAgent,
                                     boolean exitoso, String motivo) {
         try {
-            LogAcceso registro = LogAcceso.builder()
-                    .usuario(u)
-                    .correoIntento(correo)
-                    .ipOrigen(ip)
-                    .userAgent(userAgent)
-                    .exitoso(exitoso)
-                    .motivo(motivo)
-                    .build();
+            LogAcceso registro = new LogAcceso();
+            registro.setUsuario(u);
+            registro.setCorreoIntento(correo);
+            registro.setIpOrigen(ip);
+            registro.setUserAgent(userAgent);
+            registro.setExitoso(exitoso);
+            registro.setMotivo(motivo);
             logAccesoRepository.save(registro);
         } catch (Exception e) {
             log.warn("No se pudo registrar log de acceso: {}", e.getMessage());

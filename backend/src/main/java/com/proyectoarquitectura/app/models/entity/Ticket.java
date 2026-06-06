@@ -35,12 +35,10 @@ public class Ticket {
     private String tipo;
 
     @Column(nullable = false, length = 20)
-    @Builder.Default
-    private String prioridad = "media";
+    private String prioridad;
 
     @Column(nullable = false, length = 20)
-    @Builder.Default
-    private String estado = "abierto";
+    private String estado;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id")
@@ -83,4 +81,17 @@ public class Ticket {
     @UpdateTimestamp
     @Column(name = "actualizado_en", nullable = false)
     private LocalDateTime actualizadoEn;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.codigo == null) {
+            this.codigo = "TKT-" + System.currentTimeMillis();
+        }
+        if (this.estado == null) {
+            this.estado = "abierto";
+        }
+        if (this.prioridad == null) {
+            this.prioridad = "media";
+        }
+    }
 }

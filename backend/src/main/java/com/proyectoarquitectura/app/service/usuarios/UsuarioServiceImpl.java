@@ -8,6 +8,8 @@ import com.proyectoarquitectura.app.models.entity.Usuario;
 import com.proyectoarquitectura.app.repository.RolRepository;
 import com.proyectoarquitectura.app.repository.UsuarioRepository;
 import com.proyectoarquitectura.app.security.SecurityAuditLogger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +45,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                 adminId);
 
         return UsuarioResponse.from(usuario);
+    }
+
+    @Override
+    public Page<UsuarioResponse> listarUsuarios(Pageable pageable) {
+        return usuarioRepository.findAll(pageable).map(UsuarioResponse::from);
     }
 }
