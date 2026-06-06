@@ -12,8 +12,18 @@
 
 :root {
   font-family: "Inter", sans-serif;
+}
+
+/* Pantallas de auth: tema oscuro */
+body:has([data-theme="auth"]) {
   background-color: var(--color-bg-dark);
   color: white;
+}
+
+/* TicketHub (agente/admin): tema claro */
+body:has([data-theme="app"]) {
+  background-color: #f9fafb;
+  color: #18181b;
 }
 
 body {

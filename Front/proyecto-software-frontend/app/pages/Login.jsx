@@ -30,9 +30,23 @@ export default function Login() {
     setInfoMsg("");
     setSubmitting(true);
     try {
+      const response = await authService.login(form);
+      
+      // Guardar el token con la clave correcta que espera axios.js
+      if (response?.data?.data?.accessToken) {
+        localStorage.setItem('auth_token', response.data.data.accessToken);
+        localStorage.setItem('refresh_token', response.data.data.refreshToken);
+        console.log("Token guardado correctamente con clave 'auth_token'");
+      } else if (response?.data?.accessToken) {
+        localStorage.setItem('auth_token', response.data.accessToken);
+        localStorage.setItem('refresh_token', response.data.refreshToken);
+        console.log("Token guardado correctamente con clave 'auth_token'");
+      }
+      
       await login(form);
       navigate("/");
     } catch (err) {
+      console.error("Error de login:", err);
       setErrorMsg(
         err?.response?.data?.message ||
           err?.message ||
