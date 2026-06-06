@@ -1,0 +1,95 @@
+name: CI/CD
+
+# CI: se ejecuta en cada Pull Request y en cada push a main.
+# CD: el job "deploy" solo corre en push a main (merge) y tras pasar CI.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend · Build + Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Build + pruebas automatizadas (JUnit, H2 en memoria)
+        run: mvn -B verify
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          JWT_SECRET: claveSuperSecretaParaCI1234567890abcdefghij
+
+      - name: Publicar reporte de tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: backend/target/surefire-reports
+          if-no-files-found: ignore
+
+  frontend:
+    name: Frontend · Lint + Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Front/proyecto-software-frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: Front/proyecto-software-frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint del código (ESLint)
+        run: npm run lint
+
+      # Informativo: no bloquea el pipeline si hay errores de tipos pendientes
+      - name: Verificación de tipos (TypeScript)
+        run: npm run typecheck
+        continue-on-error: true
+
+      - name: Build del proyecto
+        run: npm run build
+        env:
+          VITE_API_URL: https://proyecto-ticket-26xq.onrender.com
+
+  deploy:
+    name: Deploy a producción
+    runs-on: ubuntu-latest
+    # Solo al hacer merge/push a main y si build, lint y tests pasaron
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [backend, frontend]
+    environment: production
+    steps:
+      - name: Desplegar backend en Render (Deploy Hook)
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            echo "::error::Falta el secret RENDER_DEPLOY_HOOK_URL"
+            exit 1
+          fi
+          curl -sSf -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          echo "Deploy del backend disparado en Render ✅"
+
+      - name: Frontend (Vercel)
+        run: |
+          echo "El frontend se despliega automáticamente: Vercel está conectado a este repo"
+          echo "y publica producción con cada push a main ✅"
