@@ -106,13 +106,6 @@ export default function IntegracionesAdmin() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Integraciones</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Conecta TicketHub con servicios externos
-        </p>
-      </div>
-
       {mensaje && (
         <div className="rounded-xl bg-green-50 border border-green-200 p-4">
           <p className="text-green-700 text-sm">{mensaje}</p>

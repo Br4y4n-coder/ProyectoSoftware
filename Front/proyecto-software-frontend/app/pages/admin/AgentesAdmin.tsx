@@ -446,23 +446,15 @@ export default function AgentesAdmin() {
         </div>
       )}
 
-      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Gestión de Agentes</h1>
-          <p className="text-sm text-zinc-500 mt-1">
-            Administra los agentes de soporte del sistema
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={handleNuevoAgente}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-primary text-white hover:opacity-90 transition"
-          >
-            <UserPlus className="w-4 h-4" /> Nuevo Agente
-          </button>
-        </div>
-      </header>
+      <div className="flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={handleNuevoAgente}
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-primary text-white hover:opacity-90 transition"
+        >
+          <UserPlus className="w-4 h-4" /> Nuevo Agente
+        </button>
+      </div>
 
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="rounded-xl bg-white border border-zinc-200 p-4 shadow-sm">

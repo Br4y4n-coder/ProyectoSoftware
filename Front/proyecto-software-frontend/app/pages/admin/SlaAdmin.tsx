@@ -56,13 +56,6 @@ export default function SlaAdmin() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900">SLA y Reglas</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Administra las reglas de nivel de servicio (SLA)
-        </p>
-      </div>
-
       {reglas.length === 0 ? (
         <div className="rounded-xl bg-yellow-50 border border-yellow-200 p-6 text-center">
           <p className="text-yellow-700">No hay reglas SLA configuradas.</p>

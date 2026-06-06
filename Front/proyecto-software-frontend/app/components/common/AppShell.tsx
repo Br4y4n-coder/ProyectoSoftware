@@ -28,6 +28,11 @@ export interface AppShellProps {
   supportItems?: SidebarNavItem[];
   /** Badge de modo en el sidebar: "MODO ADMINISTRADOR", "MODO AGENTE"… */
   modeBadge?: string;
+  /** Contenido a la izquierda de la barra superior (ej. saludo del agente).
+   *  Si se pasa, la búsqueda se compacta y se alinea a la derecha. */
+  headerLeft?: ReactNode;
+  /** Muestra u oculta la búsqueda de la barra superior (default: true). */
+  showSearch?: boolean;
   children?: ReactNode;
 }
 
@@ -37,6 +42,8 @@ export function AppShell({
   accountItems = [],
   supportItems = [],
   modeBadge,
+  headerLeft,
+  showSearch = true,
 }: AppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -176,15 +183,34 @@ export function AppShell({
             <Menu className="w-5 h-5" />
           </button>
 
-          <div
-            onClick={() => (window.location.href = "/buscar")}
-            className="hidden md:flex flex-1 max-w-md items-center gap-2 h-9 px-3 rounded-lg bg-zinc-100 text-sm text-zinc-400 cursor-pointer hover:bg-zinc-200 transition"
-          >
-            <Search className="w-4 h-4 shrink-0" />
-            <span className="truncate">Buscar tickets, soluciones…</span>
-          </div>
-
-          <div className="flex-1 md:flex-none" />
+          {headerLeft ? (
+            <>
+              {/* Saludo / título a la izquierda, búsqueda compacta a la derecha */}
+              <div className="flex-1 min-w-0">{headerLeft}</div>
+              {showSearch && (
+                <div
+                  onClick={() => (window.location.href = "/buscar")}
+                  className="hidden md:flex w-64 shrink-0 items-center gap-2 h-9 px-3 rounded-lg bg-zinc-100 text-sm text-zinc-400 cursor-pointer hover:bg-zinc-200 transition"
+                >
+                  <Search className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Buscar tickets, clientes…</span>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {showSearch && (
+                <div
+                  onClick={() => (window.location.href = "/buscar")}
+                  className="hidden md:flex flex-1 max-w-md items-center gap-2 h-9 px-3 rounded-lg bg-zinc-100 text-sm text-zinc-400 cursor-pointer hover:bg-zinc-200 transition"
+                >
+                  <Search className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Buscar tickets, soluciones…</span>
+                </div>
+              )}
+              <div className="flex-1 md:flex-none" />
+            </>
+          )}
 
           <button
             type="button"
