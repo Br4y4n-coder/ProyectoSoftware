@@ -31,12 +31,7 @@ export default function Reportes() {
         setIsLoading(true);
         console.log("Haciendo petición a /api/tickets");
         
-        const response = await apiFetch(`/api/tickets?page=0&size=100`, {
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-        });
+        const response = await apiFetch(`/api/tickets?page=0&size=100`);
         
         console.log("Respuesta status:", response.status);
         

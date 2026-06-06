@@ -46,12 +46,7 @@ export default function TicketQueue() {
     }
     
     try {
-      const response = await apiFetch(`/api/tickets?page=0&size=100`, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
+      const response = await apiFetch(`/api/tickets?page=0&size=100`);
       
       if (response.ok) {
         const data = await response.json();

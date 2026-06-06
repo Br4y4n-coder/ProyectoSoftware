@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tipo de caja: GRIS — se conoce la estructura del controlador y se prueba
  * la capa HTTP (códigos de estado, cuerpos de respuesta) mockeando el servicio.
  *
- * Herramienta: @SpringBootTest + MockMvc + @MockBean (AuthService).
+ * Herramienta: @SpringBootTest + MockMvc + @MockitoBean (AuthService).
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -41,8 +41,8 @@ class AuthControllerTest {
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper mapper;
 
-    @MockBean AuthService authService;
-    @MockBean JwtService jwtService;
+    @MockitoBean AuthService authService;
+    @MockitoBean JwtService jwtService;
 
     // ─── POST /api/auth/register ─────────────────────────────────────────────
 

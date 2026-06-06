@@ -29,9 +29,7 @@ export default function IntegracionesAdmin() {
     }
     
     try {
-      const response = await apiFetch(`/api/integraciones`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await apiFetch(`/api/integraciones`);
       
       if (response.ok) {
         const data = await response.json();
@@ -56,11 +54,7 @@ export default function IntegracionesAdmin() {
     
     try {
       const response = await apiFetch(`/api/integraciones/${id}/${accion}`, {
-        method: "POST",
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        method: "POST"
       });
       
       if (response.ok) {

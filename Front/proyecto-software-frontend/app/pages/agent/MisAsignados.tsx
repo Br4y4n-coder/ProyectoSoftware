@@ -32,9 +32,7 @@ export default function MisAsignados() {
     if (!token) return;
     
     try {
-      const response = await apiFetch(`/api/auth/me`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await apiFetch(`/api/auth/me`);
       if (response.ok) {
         const data = await response.json();
         setAgenteId(data?.data?.id);
@@ -54,12 +52,7 @@ export default function MisAsignados() {
     }
     
     try {
-      const response = await apiFetch(`/api/tickets?page=0&size=100`, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
+      const response = await apiFetch(`/api/tickets?page=0&size=100`);
       
       if (response.ok) {
         const data = await response.json();

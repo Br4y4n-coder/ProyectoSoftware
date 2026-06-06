@@ -20,25 +20,19 @@ export default function MetricasAdmin() {
       }
       
       try {
-        const resEstado = await apiFetch(`/api/metrics/tickets-por-estado`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const resEstado = await apiFetch(`/api/metrics/tickets-por-estado`);
         if (resEstado.ok) {
           const data = await resEstado.json();
           setTicketsPorEstado(data?.data || []);
         }
 
-        const resPrioridad = await apiFetch(`/api/metrics/tickets-por-prioridad`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const resPrioridad = await apiFetch(`/api/metrics/tickets-por-prioridad`);
         if (resPrioridad.ok) {
           const data = await resPrioridad.json();
           setTicketsPorPrioridad(data?.data || []);
         }
 
-        const resTiempo = await apiFetch(`/api/metrics/tiempo-promedio-resolucion`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const resTiempo = await apiFetch(`/api/metrics/tiempo-promedio-resolucion`);
         if (resTiempo.ok) {
           const data = await resTiempo.json();
           setTiempoPromedio(data?.data);

@@ -28,9 +28,7 @@ export default function AuditoriaAdmin() {
         url = `/api/auditoria/buscar/accion?accion=${search}&page=0&size=100`;
       }
       
-      const response = await apiFetch(url, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await apiFetch(url);
       
       if (response.ok) {
         const data = await response.json();

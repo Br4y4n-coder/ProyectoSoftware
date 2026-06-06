@@ -18,12 +18,7 @@ export default function SlaAdmin() {
       }
 
       try {
-        const response = await apiFetch(`/api/sla`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-        });
+        const response = await apiFetch(`/api/sla`);
 
         if (response.ok) {
           const data = await response.json();

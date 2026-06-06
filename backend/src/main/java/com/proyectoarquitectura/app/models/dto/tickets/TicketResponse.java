@@ -23,6 +23,7 @@ public class TicketResponse {
     private LocalDateTime fechaCierre;
     private LocalDateTime fechaVencimientoSla;
     private Integer tiempoResolucionMinutos;
+    private Short valoracion;
 
     public TicketResponse() {}
 
@@ -56,7 +57,8 @@ public class TicketResponse {
         response.setFechaCierre(t.getFechaCierre());
         response.setFechaVencimientoSla(t.getFechaVencimientoSla());
         response.setTiempoResolucionMinutos(t.getTiempoResolucionMinutos());
-        
+        response.setValoracion(t.getValoracion());
+
         return response;
     }
 
@@ -114,4 +116,7 @@ public class TicketResponse {
     
     public Integer getTiempoResolucionMinutos() { return tiempoResolucionMinutos; }
     public void setTiempoResolucionMinutos(Integer tiempoResolucionMinutos) { this.tiempoResolucionMinutos = tiempoResolucionMinutos; }
+
+    public Short getValoracion() { return valoracion; }
+    public void setValoracion(Short valoracion) { this.valoracion = valoracion; }
 }

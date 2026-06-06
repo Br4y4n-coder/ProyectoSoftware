@@ -19,9 +19,7 @@ export default function CategoriasAdmin() {
     }
     
     try {
-      const response = await apiFetch(`/api/categorias`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await apiFetch(`/api/categorias`);
       
       if (response.ok) {
         const data = await response.json();
