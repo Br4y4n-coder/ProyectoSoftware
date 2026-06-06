@@ -83,7 +83,7 @@ class TicketIntegrationTest {
         // Seed categoría
         if (categoriaRepository.findAll().isEmpty()) {
             Categoria cat = new Categoria();
-            cat.setNombre("Soporte Técnico"); cat.setActiva(true);
+            cat.setNombre("Soporte Técnico"); cat.setActivo(true);
             categoriaRepository.save(cat);
         }
         categoriaId = categoriaRepository.findAll().get(0).getId();

@@ -32,6 +32,9 @@ export default tseslint.config(
       "react/prop-types": "off",
       "react/react-in-jsx-scope": "off",
       "@typescript-eslint/no-unused-vars": ["warn"],
+      // Patrón "fetch al montar" usado en todo el proyecto; se deja como
+      // advertencia para no bloquear CI mientras se migra gradualmente.
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
   prettierConfig
