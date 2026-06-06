@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import NotificationsBell from "../components/common/NotificationsBell";
 
 export default function MainLayout() {
   const location = useLocation();
@@ -166,16 +167,8 @@ export default function MainLayout() {
             <span className="truncate">Buscar tickets, soluciones…</span>
           </div>
 
-          {/* Botón de notificaciones */}
-          <button
-            type="button"
-            onClick={() => window.location.href = "/notificaciones"}
-            className="relative shrink-0 w-9 h-9 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-700 hover:bg-zinc-200 transition"
-            aria-label="Notificaciones"
-          >
-            <IconBell />
-            <span className="pointer-events-none absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white" />
-          </button>
+          {/* Botón de notificaciones (panel desplegable) */}
+          <NotificationsBell />
 
           <div className="shrink-0 w-9 h-9 rounded-full bg-primary flex items-center justify-center">
             <span className="text-white text-xs font-bold">{initials}</span>
@@ -330,24 +323,6 @@ function IconLogout() {
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 4 V2 H2 V14 H9 V12" />
       <path d="M6 8 H14 M11 5 L14 8 L11 11" />
-    </svg>
-  );
-}
-function IconBell() {
-  return (
-    <svg
-      className="shrink-0"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
     </svg>
   );
 }
