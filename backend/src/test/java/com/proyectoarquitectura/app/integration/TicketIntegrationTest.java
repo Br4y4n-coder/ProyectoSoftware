@@ -105,9 +105,9 @@ class TicketIntegrationTest {
     void crearTicket_retorna201() throws Exception {
         String payload = String.format("""
                 {
-                  "titulo": "PC no enciende",
+                  "asunto": "PC no enciende",
                   "descripcion": "El equipo no enciende desde esta mañana",
-                  "tipo": "incidente",
+                  "tipo": "problema",
                   "prioridad": "alta",
                   "categoriaId": %d
                 }
@@ -118,7 +118,7 @@ class TicketIntegrationTest {
                         .header("Authorization", "Bearer " + accessToken)
                         .content(payload))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.data.titulo").value("PC no enciende"))
+                .andExpect(jsonPath("$.data.asunto").value("PC no enciende"))
                 .andExpect(jsonPath("$.data.estado").exists())
                 .andExpect(jsonPath("$.data.codigo").exists());
     }
@@ -128,7 +128,7 @@ class TicketIntegrationTest {
     void obtenerTicketPorId_retornaDatos() throws Exception {
         // Primero crear un ticket
         String payload = String.format("""
-                {"titulo":"Ticket ID Test","descripcion":"Desc","tipo":"solicitud","prioridad":"baja","categoriaId":%d}
+                {"asunto":"Ticket ID Test","descripcion":"Desc","tipo":"solicitud","prioridad":"baja","categoriaId":%d}
                 """, categoriaId);
 
         MvcResult crearResult = mockMvc.perform(post("/api/tickets")
@@ -145,7 +145,7 @@ class TicketIntegrationTest {
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(id))
-                .andExpect(jsonPath("$.data.titulo").value("Ticket ID Test"));
+                .andExpect(jsonPath("$.data.asunto").value("Ticket ID Test"));
     }
 
     @Test

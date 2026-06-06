@@ -71,8 +71,8 @@ class UsuarioIntegrationTest {
                 .orElseGet(() -> { Rol r = new Rol(); r.setNombre("ADMINISTRADOR"); return rolRepository.save(r); });
         Rol rolUser = rolRepository.findByNombre("usuario")
                 .orElseGet(() -> { Rol r = new Rol(); r.setNombre("usuario"); return rolRepository.save(r); });
-        Rol rolAgente = rolRepository.findByNombre("AGENTE")
-                .orElseGet(() -> { Rol r = new Rol(); r.setNombre("AGENTE"); return rolRepository.save(r); });
+        Rol rolAgente = rolRepository.findByNombre("agente")
+                .orElseGet(() -> { Rol r = new Rol(); r.setNombre("agente"); return rolRepository.save(r); });
 
         // Crear admin
         Usuario admin = new Usuario();
@@ -110,14 +110,14 @@ class UsuarioIntegrationTest {
     @Test
     @DisplayName("INT-03-B | Admin cambia rol de usuario → 200 OK con nuevo rol")
     void admin_cambiaRol_retorna200() throws Exception {
-        String payload = "{\"rol\":\"AGENTE\"}";
+        String payload = "{\"rol\":\"agente\"}";
 
         mockMvc.perform(patch("/api/usuarios/" + usuarioNormalId + "/rol")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + adminToken)
                         .content(payload))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.rol").value("AGENTE"));
+                .andExpect(jsonPath("$.data.rol").value("agente"));
     }
 
     @Test
