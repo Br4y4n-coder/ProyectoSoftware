@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { Save, Globe, Bell, Shield, Mail, Server, Eye, EyeOff } from "lucide-react";
 
 export default function ConfiguracionAdmin() {
@@ -31,7 +33,7 @@ export default function ConfiguracionAdmin() {
     }
     
     try {
-      const response = await fetch(`http://localhost:8080/api/configuracion/mapa`, {
+      const response = await apiFetch(`/api/configuracion/mapa`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -90,7 +92,7 @@ export default function ConfiguracionAdmin() {
         maintenanceMode: String(config.maintenanceMode),
       };
       
-      const response = await fetch(`http://localhost:8080/api/configuracion`, {
+      const response = await apiFetch(`/api/configuracion`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

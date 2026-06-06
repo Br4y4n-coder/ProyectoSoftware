@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import apiFetch from "../../api/apiFetch";
+
 export default function SlaAdmin() {
   const [reglas, setReglas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,7 +18,7 @@ export default function SlaAdmin() {
       }
 
       try {
-        const response = await fetch(`http://localhost:8080/api/sla`, {
+        const response = await apiFetch(`/api/sla`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

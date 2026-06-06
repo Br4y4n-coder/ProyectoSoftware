@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import apiFetch from "../api/apiFetch";
+
 export default function Reportes() {
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -29,7 +31,7 @@ export default function Reportes() {
         setIsLoading(true);
         console.log("Haciendo petición a /api/tickets");
         
-        const response = await fetch(`http://localhost:8080/api/tickets?page=0&size=100`, {
+        const response = await apiFetch(`/api/tickets?page=0&size=100`, {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

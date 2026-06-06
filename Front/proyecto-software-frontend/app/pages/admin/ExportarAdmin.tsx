@@ -1,4 +1,6 @@
 import { useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { Download, FileSpreadsheet, FileText, FileJson, Calendar, Filter } from "lucide-react";
 
 export default function ExportarAdmin() {
@@ -37,10 +39,11 @@ export default function ExportarAdmin() {
     const url = getUrl();
     
     try {
-      const response = await fetch(`http://localhost:8080${url}`, {
-        headers: { 
+      const response = await apiFetch(`${url}`, {
+        headers: {
           'Authorization': `Bearer ${token}`
         },
+        responseType: 'blob',
       });
       
       if (!response.ok) {

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { Link } from "react-router";
 import { Search } from "lucide-react";
 import { PriorityBadge, StatusBadge } from "../../components/common/ticketHelpers";
@@ -30,7 +32,7 @@ export default function MisAsignados() {
     if (!token) return;
     
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/me`, {
+      const response = await apiFetch(`/api/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -52,7 +54,7 @@ export default function MisAsignados() {
     }
     
     try {
-      const response = await fetch(`http://localhost:8080/api/tickets?page=0&size=100`, {
+      const response = await apiFetch(`/api/tickets?page=0&size=100`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { Download, Plus, Search } from "lucide-react";
 import { Badge } from "../../components/common/Badge";
 
@@ -31,7 +33,7 @@ export default function UserManagement() {
     }
     
     try {
-      const response = await fetch(`http://localhost:8080/api/usuarios?page=0&size=100`, {
+      const response = await apiFetch(`/api/usuarios?page=0&size=100`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -60,7 +62,7 @@ export default function UserManagement() {
     setCambiandoRol(userId);
     
     try {
-      const response = await fetch(`http://localhost:8080/api/usuarios/${userId}/rol`, {
+      const response = await apiFetch(`/api/usuarios/${userId}/rol`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

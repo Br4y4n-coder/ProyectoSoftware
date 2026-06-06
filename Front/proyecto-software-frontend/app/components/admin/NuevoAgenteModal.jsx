@@ -1,4 +1,6 @@
 import { useState } from "react";
+import apiFetch from "../../api/apiFetch";
+
 import { X } from "lucide-react";
 
 export default function NuevoAgenteModal({ isOpen, onClose, onSuccess }) {
@@ -27,7 +29,7 @@ export default function NuevoAgenteModal({ isOpen, onClose, onSuccess }) {
     const token = localStorage.getItem('auth_token');
 
     try {
-      const registerResponse = await fetch(`http://localhost:8080/api/auth/register`, {
+      const registerResponse = await apiFetch(`/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -51,7 +53,7 @@ export default function NuevoAgenteModal({ isOpen, onClose, onSuccess }) {
 
       const usuarioId = registerData?.data?.id;
 
-      const rolResponse = await fetch(`http://localhost:8080/api/usuarios/${usuarioId}/rol`, {
+      const rolResponse = await apiFetch(`/api/usuarios/${usuarioId}/rol`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

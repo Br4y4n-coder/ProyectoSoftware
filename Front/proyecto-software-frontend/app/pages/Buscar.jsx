@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import apiFetch from "../api/apiFetch";
+
 import { useAuth } from "../contexts/AuthContext";
 import { Link } from "react-router";
 
@@ -17,7 +19,7 @@ export default function Buscar() {
     setBuscado(true);
 
     try {
-      const response = await fetch(`http://localhost:8080/api/tickets/mios?page=0&size=100`, {
+      const response = await apiFetch(`/api/tickets/mios?page=0&size=100`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
