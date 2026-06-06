@@ -19,11 +19,7 @@ export default function Buscar() {
     setBuscado(true);
 
     try {
-      const response = await apiFetch(`/api/tickets/mios?page=0&size=100`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch(`/api/tickets/mios?page=0&size=100`);
       
       if (response.ok) {
         const data = await response.json();

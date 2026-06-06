@@ -1,7 +1,13 @@
 .DS_Store
 .env
+.env.local
 /node_modules/
 
 # React Router
 /.react-router/
 /build/
+
+# Reportes y artefactos locales
+/coverage/
+lint.txt
+*.bak

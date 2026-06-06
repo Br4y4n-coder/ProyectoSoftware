@@ -3,6 +3,7 @@ package com.proyectoarquitectura.app.service.usuarios;
 import com.proyectoarquitectura.app.exception.BusinessException;
 import com.proyectoarquitectura.app.exception.NotFoundException;
 import com.proyectoarquitectura.app.models.dto.auth.UsuarioResponse;
+import com.proyectoarquitectura.app.models.dto.usuarios.ActualizarUsuarioRequest;
 import com.proyectoarquitectura.app.models.entity.Rol;
 import com.proyectoarquitectura.app.models.entity.Usuario;
 import com.proyectoarquitectura.app.repository.RolRepository;
@@ -69,6 +70,34 @@ public class UsuarioServiceImpl implements UsuarioService {
                 adminId);
 
         return UsuarioResponse.from(usuario);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioResponse actualizar(Integer usuarioId, ActualizarUsuarioRequest req, Integer adminId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado: " + usuarioId));
+
+        if (req.getNombres() != null && !req.getNombres().isBlank()) {
+            usuario.setNombres(req.getNombres().trim());
+        }
+        if (req.getApellidos() != null && !req.getApellidos().isBlank()) {
+            usuario.setApellidos(req.getApellidos().trim());
+        }
+        if (req.getTelefono() != null) {
+            usuario.setTelefono(req.getTelefono().trim());
+        }
+        if (req.getNivelAgente() != null) {
+            usuario.setNivelAgente(req.getNivelAgente());
+        }
+        if (req.getEstado() != null && !req.getEstado().isBlank()) {
+            if (usuarioId.equals(adminId)) {
+                throw BusinessException.badRequest("No puedes cambiar el estado de tu propia cuenta");
+            }
+            usuario.setEstado(req.getEstado().toLowerCase());
+        }
+
+        return UsuarioResponse.from(usuarioRepository.save(usuario));
     }
 
     @Override

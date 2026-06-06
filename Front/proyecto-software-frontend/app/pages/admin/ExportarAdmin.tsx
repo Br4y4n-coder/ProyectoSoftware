@@ -40,9 +40,6 @@ export default function ExportarAdmin() {
     
     try {
       const response = await apiFetch(`${url}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
         responseType: 'blob',
       });
       

@@ -31,7 +31,6 @@ export default function NuevoAgenteModal({ isOpen, onClose, onSuccess }) {
     try {
       const registerResponse = await apiFetch(`/api/auth/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           correo: formData.correo,
           contrasena: formData.contrasena,
@@ -55,10 +54,6 @@ export default function NuevoAgenteModal({ isOpen, onClose, onSuccess }) {
 
       const rolResponse = await apiFetch(`/api/usuarios/${usuarioId}/rol`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
         body: JSON.stringify({ rol: "agente" }),
       });
 

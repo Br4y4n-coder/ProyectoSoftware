@@ -33,9 +33,7 @@ export default function ConfiguracionAdmin() {
     }
     
     try {
-      const response = await apiFetch(`/api/configuracion/mapa`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await apiFetch(`/api/configuracion/mapa`);
       
       if (response.ok) {
         const data = await response.json();
@@ -94,10 +92,6 @@ export default function ConfiguracionAdmin() {
       
       const response = await apiFetch(`/api/configuracion`, {
         method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify(payload)
       });
       

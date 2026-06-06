@@ -37,10 +37,6 @@ export default function MiPerfil() {
     try {
       const response = await apiFetch("/api/usuarios/perfil", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(formData),
       });
       if (response.ok) {

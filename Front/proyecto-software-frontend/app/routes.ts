@@ -12,10 +12,10 @@ export default [
   route("auth/reset-password", "pages/ResetPassword.jsx"),
 
   layout("layouts/AgentLayout.tsx", [
-    route("agent/dashboard", "pages/agent/AgentDashboard.tsx"),
-    route("agent/queue", "pages/agent/TicketQueue.tsx"),
-    route("agent/tickets/:id", "pages/agent/TicketDetail.tsx"),
-    route("agent/mis-asignados", "pages/agent/MisAsignados.tsx"),
+    route("agent/dashboard", "pages/agent/AgentDashboard.jsx"),
+    route("agent/queue", "pages/agent/TicketQueue.jsx"),
+    route("agent/tickets/:id", "pages/agent/TicketDetail.jsx"),
+    route("agent/mis-asignados", "pages/agent/MisAsignados.jsx"),
     route("reportes", "pages/Reportes.jsx"),
   ]),
 

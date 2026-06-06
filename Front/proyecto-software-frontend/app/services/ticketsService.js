@@ -31,6 +31,10 @@ export const ticketsService = {
   cambiarEstado(id, estado) {
     return apiClient.patch(`${BASE}/${id}/estado`, { estado });
   },
+
+  historial(id) {
+    return apiClient.get(`${BASE}/${id}/historial`);
+  },
 };
 
 export default ticketsService;

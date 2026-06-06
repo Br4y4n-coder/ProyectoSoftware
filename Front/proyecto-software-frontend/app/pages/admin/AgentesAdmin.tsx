@@ -42,12 +42,7 @@ export default function AgentesAdmin() {
     }
     
     try {
-      const response = await apiFetch(`/api/usuarios?page=0&size=100`, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
+      const response = await apiFetch(`/api/usuarios?page=0&size=100`);
       
       if (response.ok) {
         const data = await response.json();
@@ -105,7 +100,6 @@ export default function AgentesAdmin() {
     try {
       const registerResponse = await apiFetch(`/api/auth/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           correo: formData.correo,
           contrasena: formData.contrasena,
@@ -129,10 +123,6 @@ export default function AgentesAdmin() {
 
       const rolResponse = await apiFetch(`/api/usuarios/${usuarioId}/rol`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
         body: JSON.stringify({ rol: "agente" }),
       });
 
@@ -186,10 +176,6 @@ export default function AgentesAdmin() {
     try {
       const response = await apiFetch(`/api/usuarios/${agenteEditando.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
         body: JSON.stringify({
           nombres: editFormData.nombres,
           apellidos: editFormData.apellidos,

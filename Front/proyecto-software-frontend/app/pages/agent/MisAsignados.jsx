@@ -1,75 +1,52 @@
 import { useEffect, useState } from "react";
 import apiFetch from "../../api/apiFetch";
-
 import { Link } from "react-router";
 import { Search } from "lucide-react";
 import { PriorityBadge, StatusBadge } from "../../components/common/ticketHelpers";
 
-interface TicketItem {
-  id: number;
-  codigo: string;
-  asunto: string;
-  descripcion: string;
-  tipo: string;
-  prioridad: string;
-  estado: string;
-  clienteId: number;
-  clienteNombre: string;
-  agenteId: number | null;
-  agenteNombre: string | null;
-  fechaCreacion: string;
-}
-
 export default function MisAsignados() {
-  const [tickets, setTickets] = useState<TicketItem[]>([]);
+  const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [agenteId, setAgenteId] = useState<number | null>(null);
+  const [agenteId, setAgenteId] = useState(null);
 
   const fetchAgenteId = async () => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
     if (!token) return;
-    
+
     try {
-      const response = await apiFetch(`/api/auth/me`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await apiFetch(`/api/auth/me`);
       if (response.ok) {
         const data = await response.json();
         setAgenteId(data?.data?.id);
       }
-    } catch (error) {
+    } catch {
       console.error("Error al obtener ID del agente");
     }
   };
 
   const fetchTickets = async () => {
-    const token = localStorage.getItem('auth_token');
-    
+    const token = localStorage.getItem("auth_token");
+
     if (!token) {
       setError("No hay sesión activa");
       setIsLoading(false);
       return;
     }
-    
+
     try {
-      const response = await apiFetch(`/api/tickets?page=0&size=100`, {
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
-      
+      const response = await apiFetch(`/api/tickets?page=0&size=100`);
+
       if (response.ok) {
         const data = await response.json();
         const todos = data?.data?.content || [];
-        const misTickets = todos.filter((t: TicketItem) => t.agenteId === agenteId);
+        const misTickets = todos.filter((t) => t.agenteId === agenteId);
         setTickets(misTickets);
       } else {
         setError("Error al cargar tickets");
       }
-    } catch (error) {
+    } catch {
       setError("Error de conexión");
     } finally {
       setIsLoading(false);
@@ -89,10 +66,11 @@ export default function MisAsignados() {
     }
   }, [agenteId]);
 
-  const filteredTickets = tickets.filter(ticket =>
-    ticket.codigo?.toLowerCase().includes(search.toLowerCase()) ||
-    ticket.asunto?.toLowerCase().includes(search.toLowerCase()) ||
-    ticket.clienteNombre?.toLowerCase().includes(search.toLowerCase())
+  const filteredTickets = tickets.filter(
+    (ticket) =>
+      ticket.codigo?.toLowerCase().includes(search.toLowerCase()) ||
+      ticket.asunto?.toLowerCase().includes(search.toLowerCase()) ||
+      ticket.clienteNombre?.toLowerCase().includes(search.toLowerCase())
   );
 
   if (isLoading) {
@@ -103,7 +81,7 @@ export default function MisAsignados() {
     return (
       <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-center">
         <p className="text-red-700">{error}</p>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="mt-4 px-4 py-2 bg-primary text-white rounded-lg"
         >
