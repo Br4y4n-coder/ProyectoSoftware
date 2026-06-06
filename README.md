@@ -148,8 +148,3 @@ Arquitectura General
 
 El sistema sigue una arquitectura cliente-servidor compuesta por un frontend desarrollado en React y un backend basado en Node.js y Express. La información es almacenada en PostgreSQL y consumida mediante servicios REST que permiten gestionar tickets, usuarios y reportes de manera segura y escalable.
 
-Limitaciones Actuales
-Notificaciones por correo electrónico no implementadas.
-Carga de archivos en fase de mejora.
-Reportes avanzados pendientes de integración.
-Sistema desarrollado inicialmente como MVP académico.
