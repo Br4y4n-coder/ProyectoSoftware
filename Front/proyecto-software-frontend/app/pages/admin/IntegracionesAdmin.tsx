@@ -171,14 +171,16 @@ export default function IntegracionesAdmin() {
           <div>
             <h3 className="text-base font-semibold text-primary">API y Documentación</h3>
             <p className="text-sm text-zinc-600 mt-1">
-              Consulta nuestra documentación para desarrolladores y aprende a integrar TicketHub con tus sistemas.
+              Consulta nuestra documentación para desarrolladores (Swagger UI) y aprende a integrar TicketHub con tus sistemas.
             </p>
-            <button
-              onClick={() => alert("Documentación - próximamente")}
-              className="mt-3 text-sm text-primary hover:underline"
+            <a
+              href={`${import.meta.env.VITE_API_URL || "https://proyecto-ticket-26xq.onrender.com"}/swagger-ui.html`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-sm text-primary hover:underline"
             >
               Ver documentación →
-            </button>
+            </a>
           </div>
         </div>
       </div>
