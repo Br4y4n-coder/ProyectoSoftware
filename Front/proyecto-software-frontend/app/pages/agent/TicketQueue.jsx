@@ -1,17 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import apiFetch from "../../api/apiFetch";
-
 import { Link } from "react-router";
 import { Search, X } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import ticketsService from "../../services/ticketsService";
-import type { TicketPriority, TicketStatus } from "../../types";
-
-interface AuthUser {
-  id: number;
-  nombres: string;
-  apellidos: string;
-}
 import { Avatar } from "../../components/common/Avatar";
 import { Pagination } from "../../components/common/Pagination";
 import {
@@ -19,55 +11,37 @@ import {
   StatusBadge,
 } from "../../components/common/ticketHelpers";
 
-type QueueTab = "general" | "unassigned" | "mine" | "critical";
-
-interface TicketItem {
-  id: number;
-  codigo: string;
-  asunto: string;
-  descripcion: string;
-  tipo: string;
-  prioridad: string;
-  estado: string;
-  clienteId: number;
-  clienteNombre: string;
-  agenteId: number | null;
-  agenteNombre: string | null;
-  fechaCreacion: string;
-}
-
 export default function TicketQueue() {
-  const { user: rawUser } = useAuth();
-  const user = rawUser as AuthUser | null;
-  const [tickets, setTickets] = useState<TicketItem[]>([]);
+  const { user } = useAuth();
+  const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [tab, setTab] = useState<QueueTab>("general");
-  const [selected, setSelected] = useState<Set<number>>(new Set());
-  const [filters, setFilters] = useState<string[]>(["Estado: Abierto"]);
+  const [tab, setTab] = useState("general");
+  const [selected, setSelected] = useState(new Set());
+  const [filters, setFilters] = useState(["Estado: Abierto"]);
   const [asignando, setAsignando] = useState(false);
   const [msgAsignacion, setMsgAsignacion] = useState("");
 
   const fetchTickets = async () => {
-    const token = localStorage.getItem('auth_token');
-    
+    const token = localStorage.getItem("auth_token");
+
     if (!token) {
       setError("No hay sesión activa");
       setIsLoading(false);
       return;
     }
-    
+
     try {
       const response = await apiFetch(`/api/tickets?page=0&size=100`);
-      
+
       if (response.ok) {
         const data = await response.json();
         setTickets(data?.data?.content || []);
       } else {
         setError("Error al cargar tickets");
       }
-    } catch (error) {
+    } catch {
       setError("Error de conexión");
     } finally {
       setIsLoading(false);
@@ -80,13 +54,13 @@ export default function TicketQueue() {
 
   const filtered = useMemo(() => {
     let list = [...tickets];
-    
+
     if (tab === "unassigned") {
       list = list.filter((t) => t.agenteId === null);
     } else if (tab === "critical") {
       list = list.filter((t) => t.prioridad === "alta");
     }
-    
+
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
@@ -99,7 +73,7 @@ export default function TicketQueue() {
     return list;
   }, [search, tab, tickets]);
 
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id) => {
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -147,7 +121,7 @@ export default function TicketQueue() {
     return (
       <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-center">
         <p className="text-red-700">{error}</p>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="mt-4 px-4 py-2 bg-primary text-white rounded-lg"
         >
@@ -157,10 +131,10 @@ export default function TicketQueue() {
     );
   }
 
-  const tabs: { id: QueueTab; label: string; count?: number }[] = [
+  const tabs = [
     { id: "general", label: "Cola general" },
-    { id: "unassigned", label: "Sin asignar", count: tickets.filter(t => t.agenteId === null).length },
-    { id: "critical", label: "Prioridad alta", count: tickets.filter(t => t.prioridad === "alta").length },
+    { id: "unassigned", label: "Sin asignar", count: tickets.filter((t) => t.agenteId === null).length },
+    { id: "critical", label: "Prioridad alta", count: tickets.filter((t) => t.prioridad === "alta").length },
   ];
 
   return (
@@ -303,12 +277,12 @@ export default function TicketQueue() {
                   </td>
                   <td className="px-4 py-3 text-zinc-700">{ticket.clienteNombre}</td>
                   <td className="px-4 py-3">
-                    <PriorityBadge priority={ticket.prioridad as TicketPriority} />
+                    <PriorityBadge priority={ticket.prioridad} />
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {ticket.agenteId ? (
-                        <Avatar initials={ticket.agenteNombre?.slice(0,2).toUpperCase() ?? "A"} size="sm" />
+                        <Avatar initials={(ticket.agenteNombre?.slice(0, 2) || "A").toUpperCase()} size="sm" />
                       ) : (
                         <span className="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-xs text-zinc-400">
                           ?

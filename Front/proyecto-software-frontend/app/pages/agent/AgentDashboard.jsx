@@ -8,18 +8,7 @@ import {
   StatusBadge,
 } from "../../components/common/ticketHelpers";
 
-interface Ticket {
-  id: number;
-  codigo: string;
-  asunto: string;
-  prioridad: string;
-  estado: string;
-  clienteNombre: string;
-  fechaCreacion: string;
-  fechaVencimientoSla: string | null;
-}
-
-function formatDate(iso: string | null | undefined): string {
+function formatDate(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "—";
@@ -28,7 +17,7 @@ function formatDate(iso: string | null | undefined): string {
 
 export default function AgentDashboard() {
   const { user } = useAuth();
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -44,13 +33,10 @@ export default function AgentDashboard() {
           sort: "fechaCreacion,desc",
         });
         if (!cancelled) setTickets(data?.data?.content || []);
-      } catch (err: any) {
-        if (!cancelled)
-          setError(
-            err?.response?.data?.message ||
-              err?.message ||
-              "No se pudieron cargar los tickets"
-          );
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.response?.data?.message || err?.message || "No se pudieron cargar los tickets");
+        }
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -220,19 +206,7 @@ export default function AgentDashboard() {
   );
 }
 
-function KpiCard({
-  label,
-  value,
-  icon,
-  bg,
-  color,
-}: {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-  bg: string;
-  color: string;
-}) {
+function KpiCard({ label, value, icon, bg, color }) {
   return (
     <div className="rounded-xl bg-white border border-zinc-200 p-5 shadow-sm">
       <div className="flex items-start justify-between">

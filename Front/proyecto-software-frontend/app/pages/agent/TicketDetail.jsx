@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import {
   ArrowLeft,
@@ -17,45 +17,8 @@ import {
 } from "../../components/common/ticketHelpers";
 import { useAuth } from "../../contexts/AuthContext";
 import ticketsService from "../../services/ticketsService";
-import type { TicketPriority, TicketStatus } from "../../types";
 
-interface AuthUser {
-  id: number;
-  nombres: string;
-  apellidos: string;
-  correo?: string;
-  rol?: string;
-}
-
-interface TicketData {
-  id: number;
-  codigo: string;
-  asunto: string;
-  descripcion: string;
-  tipo: string;
-  prioridad: string;
-  estado: string;
-  categoriaNombre: string | null;
-  clienteNombre: string | null;
-  agenteId: number | null;
-  agenteNombre: string | null;
-  fechaCreacion: string | null;
-  fechaVencimientoSla: string | null;
-  tiempoResolucionMinutos: number | null;
-}
-
-interface HistorialEntry {
-  id: number;
-  campoModificado: string;
-  valorAnterior: string | null;
-  valorNuevo: string | null;
-  usuarioNombre: string | null;
-  fechaHora: string;
-}
-
-type EstadoTicket = "abierto" | "en_proceso" | "cerrado";
-
-function formatDate(iso: string | null | undefined): string {
+function formatDate(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "—";
@@ -68,7 +31,7 @@ function formatDate(iso: string | null | undefined): string {
   });
 }
 
-function slaProgress(fechaCreacion: string | null, fechaVencimiento: string | null): number {
+function slaProgress(fechaCreacion, fechaVencimiento) {
   if (!fechaCreacion || !fechaVencimiento) return 0;
   const now = Date.now();
   const inicio = new Date(fechaCreacion).getTime();
@@ -77,22 +40,21 @@ function slaProgress(fechaCreacion: string | null, fechaVencimiento: string | nu
   return Math.min(100, Math.round(((now - inicio) / total) * 100));
 }
 
-function isSlaVencido(fechaVencimiento: string | null): boolean {
+function isSlaVencido(fechaVencimiento) {
   if (!fechaVencimiento) return false;
   return Date.now() > new Date(fechaVencimiento).getTime();
 }
 
 export default function TicketDetail() {
-  const { id } = useParams<{ id: string }>();
-  const { user: rawUser } = useAuth();
-  const user = rawUser as AuthUser | null;
+  const { id } = useParams();
+  const { user } = useAuth();
 
-  const [ticket, setTicket] = useState<TicketData | null>(null);
-  const [historial, setHistorial] = useState<HistorialEntry[]>([]);
+  const [ticket, setTicket] = useState(null);
+  const [historial, setHistorial] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [status, setStatus] = useState<EstadoTicket>("abierto");
+  const [status, setStatus] = useState("abierto");
   const [savingStatus, setSavingStatus] = useState(false);
   const [asignando, setAsignando] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
@@ -110,17 +72,14 @@ export default function TicketDetail() {
 
         if (cancelled) return;
 
-        const t: TicketData = ticketRes.data?.data;
+        const t = ticketRes.data?.data;
         setTicket(t);
-        setStatus((t?.estado as EstadoTicket) || "abierto");
+        setStatus(t?.estado || "abierto");
         setHistorial(histRes.data?.data || []);
-      } catch (err: any) {
-        if (!cancelled)
-          setError(
-            err?.response?.data?.message ||
-              err?.message ||
-              "No se pudo cargar el ticket"
-          );
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.response?.data?.message || err?.message || "No se pudo cargar el ticket");
+        }
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -132,7 +91,7 @@ export default function TicketDetail() {
     };
   }, [id]);
 
-  const handleCambiarEstado = async (nuevoEstado: EstadoTicket) => {
+  const handleCambiarEstado = async (nuevoEstado) => {
     if (!id || nuevoEstado === status || savingStatus) return;
     setSavingStatus(true);
     try {
@@ -140,7 +99,7 @@ export default function TicketDetail() {
       setStatus(data?.data?.estado || nuevoEstado);
       setTicket((prev) => prev ? { ...prev, estado: data?.data?.estado || nuevoEstado } : prev);
       flash("Estado actualizado correctamente");
-    } catch (err: any) {
+    } catch (err) {
       flash(err?.response?.data?.message || "Error al cambiar estado", true);
     } finally {
       setSavingStatus(false);
@@ -162,14 +121,14 @@ export default function TicketDetail() {
           : prev
       );
       flash("Ticket asignado a ti correctamente");
-    } catch (err: any) {
+    } catch (err) {
       flash(err?.response?.data?.message || "Error al asignarte el ticket", true);
     } finally {
       setAsignando(false);
     }
   };
 
-  const flash = (msg: string, isError = false) => {
+  const flash = (msg, isError = false) => {
     setSuccessMsg(isError ? `❌ ${msg}` : `✓ ${msg}`);
     setTimeout(() => setSuccessMsg(""), 3000);
   };
@@ -227,8 +186,8 @@ export default function TicketDetail() {
               {ticket.categoriaNombre && (
                 <Badge variant="outline">{ticket.categoriaNombre}</Badge>
               )}
-              <StatusBadge status={status as TicketStatus} />
-              <PriorityBadge priority={ticket.prioridad as TicketPriority} />
+              <StatusBadge status={status} />
+              <PriorityBadge priority={ticket.prioridad} />
             </div>
             <h1 className="mt-2 text-xl font-bold text-zinc-900">
               {ticket.asunto}
@@ -365,7 +324,7 @@ export default function TicketDetail() {
           {/* Cambiar estado */}
           <SidePanel title="Estado del ticket">
             <div className="flex flex-wrap gap-2">
-              {(["abierto", "en_proceso", "cerrado"] as const).map((s) => (
+              {["abierto", "en_proceso", "cerrado"].map((s) => (
                 <button
                   key={s}
                   type="button"
@@ -484,15 +443,7 @@ export default function TicketDetail() {
   );
 }
 
-function InfoRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-}) {
+function InfoRow({ icon, label, value }) {
   return (
     <div className="flex items-center gap-2 text-zinc-600">
       <span className="text-zinc-400">{icon}</span>
@@ -502,13 +453,7 @@ function InfoRow({
   );
 }
 
-function SidePanel({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
+function SidePanel({ title, children }) {
   return (
     <div className="rounded-xl bg-white border border-zinc-200 p-4 shadow-sm">
       <h3 className="text-sm font-semibold text-zinc-900">{title}</h3>
@@ -517,7 +462,7 @@ function SidePanel({
   );
 }
 
-function Meta({ label, value }: { label: string; value: string }) {
+function Meta({ label, value }) {
   return (
     <div className="flex justify-between gap-2">
       <dt className="text-zinc-500">{label}</dt>
