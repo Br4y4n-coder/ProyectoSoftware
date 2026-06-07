@@ -5,6 +5,7 @@ import com.proyectoarquitectura.app.models.dto.ApiResponse;
 import com.proyectoarquitectura.app.models.dto.tickets.AsignarAgenteRequest;
 import com.proyectoarquitectura.app.models.dto.tickets.ActualizarTicketRequest;
 import com.proyectoarquitectura.app.models.dto.tickets.CambiarEstadoRequest;
+import com.proyectoarquitectura.app.models.dto.tickets.ComentarioTicketRequest;
 import com.proyectoarquitectura.app.models.dto.tickets.CreateTicketRequest;
 import com.proyectoarquitectura.app.models.dto.tickets.TicketHistoryResponse;
 import com.proyectoarquitectura.app.models.dto.tickets.TicketResponse;
@@ -143,6 +144,16 @@ public class TicketController {
         Integer actor = me != null ? me.getUsuario().getId() : null;
         return ResponseEntity.ok(ok(200, "Agente asignado",
                 ticketService.asignarAgente(id, req.getAgenteId(), actor)));
+    }
+
+    @Operation(summary = "Comentar un ticket", description = "Agrega un comentario o nota al historial del ticket.")
+    @PostMapping("/{id}/comentarios")
+    public ResponseEntity<ApiResponse<TicketHistoryResponse>> comentar(@PathVariable Integer id,
+                                                                       @Valid @RequestBody ComentarioTicketRequest req,
+                                                                       @AuthenticationPrincipal CustomUserDetails me) {
+        if (me == null) throw AuthException.unauthorized("No autenticado");
+        TicketHistoryResponse data = ticketService.comentar(id, req.getTexto(), me.getUsuario().getId());
+        return ResponseEntity.status(201).body(ok(201, "Comentario agregado", data));
     }
 
     @Operation(summary = "Cambiar estado del ticket", description = "Cambia el estado del ticket (ABIERTO, EN_PROGRESO, RESUELTO, CERRADO). Requiere rol ADMINISTRADOR o AGENTE.")

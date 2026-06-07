@@ -45,4 +45,6 @@ public interface TicketService {
                                 Pageable pageable);
 
     List<TicketHistoryResponse> obtenerHistorial(Integer ticketId);
+
+    TicketHistoryResponse comentar(Integer ticketId, String texto, Integer usuarioActorId);
 }

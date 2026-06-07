@@ -31,6 +31,33 @@ jobs:
           SPRING_PROFILES_ACTIVE: test
           JWT_SECRET: claveSuperSecretaParaCI1234567890abcdefghij
 
+      - name: Resumen de cobertura (JaCoCo)
+        if: always()
+        run: |
+          f=target/site/jacoco/jacoco.csv
+          if [ -f "$f" ]; then
+            awk -F, 'NR>1 {im+=$4; ic+=$5; lm+=$8; lc+=$9; mm+=$12; mc+=$13}
+              END {
+                printf "==========================================\n";
+                printf " Cobertura JaCoCo (backend)\n";
+                printf "   Instrucciones: %.1f%%\n", 100*ic/(ic+im);
+                printf "   Líneas:        %.1f%%\n", 100*lc/(lc+lm);
+                printf "   Métodos:       %.1f%%\n", 100*mc/(mc+mm);
+                printf "==========================================\n";
+              }' "$f"
+            awk -F, 'NR>1 {im+=$4; ic+=$5} END {printf "**Cobertura de instrucciones: %.1f%%** (mínimo exigido: 25%%)\n", 100*ic/(ic+im)}' "$f" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No se generó jacoco.csv"
+          fi
+
+      - name: Publicar reporte JaCoCo (HTML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: backend/target/site/jacoco
+          if-no-files-found: ignore
+
       - name: Publicar reporte de tests
         if: always()
         uses: actions/upload-artifact@v4
