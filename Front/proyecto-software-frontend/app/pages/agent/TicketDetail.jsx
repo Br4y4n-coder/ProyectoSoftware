@@ -59,6 +59,14 @@ export default function TicketDetail() {
   const [asignando, setAsignando] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
+  const [comentario, setComentario] = useState("");
+  const [enviandoComentario, setEnviandoComentario] = useState(false);
+
+  const [modalCierre, setModalCierre] = useState(false);
+  const [mensajeCierre, setMensajeCierre] = useState("");
+  const [errorCierre, setErrorCierre] = useState("");
+  const [cerrando, setCerrando] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
@@ -91,18 +99,84 @@ export default function TicketDetail() {
     };
   }, [id]);
 
+  const aplicarEstado = async (nuevoEstado) => {
+    const { data } = await ticketsService.cambiarEstado(Number(id), nuevoEstado);
+    setStatus(data?.data?.estado || nuevoEstado);
+    setTicket((prev) => prev ? { ...prev, estado: data?.data?.estado || nuevoEstado } : prev);
+  };
+
+  const recargarHistorial = async () => {
+    try {
+      const histRes = await ticketsService.historial(Number(id));
+      setHistorial(histRes.data?.data || []);
+    } catch {
+      /* el historial no es crítico */
+    }
+  };
+
   const handleCambiarEstado = async (nuevoEstado) => {
     if (!id || nuevoEstado === status || savingStatus) return;
+
+    // Cerrar requiere confirmación + mensaje de validación
+    if (nuevoEstado === "cerrado") {
+      setMensajeCierre("");
+      setErrorCierre("");
+      setModalCierre(true);
+      return;
+    }
+
     setSavingStatus(true);
     try {
-      const { data } = await ticketsService.cambiarEstado(Number(id), nuevoEstado);
-      setStatus(data?.data?.estado || nuevoEstado);
-      setTicket((prev) => prev ? { ...prev, estado: data?.data?.estado || nuevoEstado } : prev);
+      await aplicarEstado(nuevoEstado);
       flash("Estado actualizado correctamente");
+      recargarHistorial();
     } catch (err) {
       flash(err?.response?.data?.message || "Error al cambiar estado", true);
     } finally {
       setSavingStatus(false);
+    }
+  };
+
+  const confirmarCierre = async () => {
+    if (!mensajeCierre.trim()) {
+      setErrorCierre("Escribe el mensaje de validación y cierre del caso");
+      return;
+    }
+    setCerrando(true);
+    setErrorCierre("");
+    try {
+      await ticketsService.comentar(
+        Number(id),
+        `Validación y cierre del caso: ${mensajeCierre.trim()}`
+      );
+      await aplicarEstado("cerrado");
+      setModalCierre(false);
+      flash("Ticket cerrado correctamente");
+      recargarHistorial();
+    } catch (err) {
+      setErrorCierre(err?.response?.data?.message || "Error al cerrar el ticket");
+    } finally {
+      setCerrando(false);
+    }
+  };
+
+  const handleComentar = async () => {
+    const texto = comentario.trim();
+    if (!texto || enviandoComentario) return;
+    setEnviandoComentario(true);
+    try {
+      const { data } = await ticketsService.comentar(Number(id), texto);
+      if (data?.data) {
+        setHistorial((prev) => [data.data, ...prev]);
+      } else {
+        recargarHistorial();
+      }
+      setComentario("");
+      flash("Comentario agregado");
+    } catch (err) {
+      flash(err?.response?.data?.message || "Error al enviar el comentario", true);
+    } finally {
+      setEnviandoComentario(false);
     }
   };
 
@@ -267,30 +341,50 @@ export default function TicketDetail() {
                     key={entry.id}
                     className="flex gap-3 items-start text-sm"
                   >
-                    <div className="w-2 h-2 mt-1.5 rounded-full bg-primary shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-zinc-700">
-                        <span className="font-medium">
-                          {entry.usuarioNombre || "Sistema"}
-                        </span>{" "}
-                        cambió{" "}
-                        <span className="font-medium">
-                          {entry.campoModificado}
-                        </span>
-                        {entry.valorAnterior && (
-                          <>
-                            {" "}
-                            de{" "}
-                            <span className="text-zinc-500 line-through">
-                              {entry.valorAnterior}
-                            </span>
-                          </>
-                        )}{" "}
-                        a{" "}
-                        <span className="font-semibold text-primary">
-                          {entry.valorNuevo}
-                        </span>
-                      </p>
+                    <div
+                      className={`w-2 h-2 mt-1.5 rounded-full shrink-0 ${
+                        entry.campoModificado === "comentario"
+                          ? "bg-emerald-500"
+                          : "bg-primary"
+                      }`}
+                    />
+                    <div className="min-w-0 flex-1">
+                      {entry.campoModificado === "comentario" ? (
+                        <>
+                          <p className="text-zinc-700">
+                            <span className="font-medium">
+                              {entry.usuarioNombre || "Sistema"}
+                            </span>{" "}
+                            comentó:
+                          </p>
+                          <p className="mt-1 px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-100 text-zinc-700 whitespace-pre-wrap">
+                            {entry.valorNuevo}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-zinc-700">
+                          <span className="font-medium">
+                            {entry.usuarioNombre || "Sistema"}
+                          </span>{" "}
+                          cambió{" "}
+                          <span className="font-medium">
+                            {entry.campoModificado}
+                          </span>
+                          {entry.valorAnterior && (
+                            <>
+                              {" "}
+                              de{" "}
+                              <span className="text-zinc-500 line-through">
+                                {entry.valorAnterior}
+                              </span>
+                            </>
+                          )}{" "}
+                          a{" "}
+                          <span className="font-semibold text-primary">
+                            {entry.valorNuevo}
+                          </span>
+                        </p>
+                      )}
                       <p className="text-xs text-zinc-400 mt-0.5">
                         {formatDate(entry.fechaHora)}
                       </p>
@@ -300,19 +394,27 @@ export default function TicketDetail() {
               </ul>
             )}
 
-            {/* Área de comentarios (sin endpoint aún — placeholder funcional) */}
+            {/* Área de comentarios */}
             <div className="mt-4 flex flex-col sm:flex-row gap-2 border-t border-zinc-100 pt-4">
               <textarea
                 placeholder="Escribe un comentario o nota interna..."
                 rows={2}
+                value={comentario}
+                onChange={(e) => setComentario(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleComentar();
+                }}
                 className="flex-1 px-3 py-2 text-sm rounded-lg border border-zinc-200 focus:ring-2 focus:ring-primary/20 outline-none resize-none"
               />
               <div className="flex sm:flex-col gap-2 shrink-0">
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm rounded-lg bg-primary text-white hover:opacity-90 transition"
+                  onClick={handleComentar}
+                  disabled={!comentario.trim() || enviandoComentario}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm rounded-lg bg-primary text-white hover:opacity-90 transition disabled:opacity-50"
                 >
-                  <Send className="w-4 h-4" /> Enviar
+                  <Send className="w-4 h-4" />
+                  {enviandoComentario ? "Enviando..." : "Enviar"}
                 </button>
               </div>
             </div>
@@ -439,6 +541,71 @@ export default function TicketDetail() {
           </div>
         </aside>
       </div>
+
+      {/* Modal de confirmación de cierre */}
+      {modalCierre && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => !cerrando && setModalCierre(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-xl w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-6 py-4 border-b border-zinc-200">
+              <h2 className="text-lg font-bold text-zinc-900">Cerrar ticket</h2>
+              <p className="text-sm text-zinc-500 mt-0.5">
+                {ticket.codigo} — {ticket.asunto}
+              </p>
+            </div>
+
+            <div className="px-6 py-5 space-y-3">
+              <p className="text-sm text-zinc-600">
+                Para cerrar el caso confirma la acción y deja el mensaje de
+                validación que quedará registrado en el historial.
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 mb-1">
+                  Mensaje de validación y cierre *
+                </label>
+                <textarea
+                  rows={3}
+                  value={mensajeCierre}
+                  onChange={(e) => {
+                    setMensajeCierre(e.target.value);
+                    if (errorCierre) setErrorCierre("");
+                  }}
+                  placeholder="Ej: Se validó con el cliente que el problema quedó resuelto..."
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  autoFocus
+                />
+              </div>
+              {errorCierre && (
+                <p className="text-sm text-red-600">{errorCierre}</p>
+              )}
+            </div>
+
+            <div className="flex gap-3 px-6 py-4 border-t border-zinc-200">
+              <button
+                type="button"
+                onClick={confirmarCierre}
+                disabled={cerrando}
+                className="flex-1 py-2 rounded-lg bg-primary text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
+              >
+                {cerrando ? "Cerrando..." : "Confirmar cierre"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalCierre(false)}
+                disabled={cerrando}
+                className="flex-1 py-2 rounded-lg border border-zinc-300 text-zinc-700 font-semibold hover:bg-zinc-50 transition disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

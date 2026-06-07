@@ -209,6 +209,24 @@ public class TicketServiceImpl implements TicketService {
                 .toList();
     }
 
+    @Override
+    public TicketHistoryResponse comentar(Integer ticketId, String texto, Integer usuarioActorId) {
+        obtenerTicket(ticketId); // 404 si no existe
+
+        Usuario actor = usuarioActorId != null
+                ? usuarioRepository.findById(usuarioActorId).orElse(null)
+                : null;
+
+        TicketHistory comentario = ticketHistoryRepository.save(TicketHistory.builder()
+                .ticketId(ticketId)
+                .campoModificado("comentario")
+                .valorNuevo(texto)
+                .usuario(actor)
+                .build());
+
+        return TicketHistoryResponse.from(comentario);
+    }
+
     /* ---------- Helpers ---------- */
 
     private Ticket obtenerTicket(Integer id) {

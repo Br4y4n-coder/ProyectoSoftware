@@ -35,6 +35,10 @@ export const ticketsService = {
   historial(id) {
     return apiClient.get(`${BASE}/${id}/historial`);
   },
+
+  comentar(id, texto) {
+    return apiClient.post(`${BASE}/${id}/comentarios`, { texto });
+  },
 };
 
 export default ticketsService;
