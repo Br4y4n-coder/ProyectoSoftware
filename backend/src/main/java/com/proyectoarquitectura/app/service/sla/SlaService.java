@@ -1,7 +1,6 @@
 package com.proyectoarquitectura.app.service.sla;
 
 import com.proyectoarquitectura.app.models.dto.sla.SlaReglaResponse;
-import com.proyectoarquitectura.app.models.entity.SlaRegla;
 import com.proyectoarquitectura.app.repository.SlaReglaRepository;
 import org.springframework.stereotype.Service;
 
